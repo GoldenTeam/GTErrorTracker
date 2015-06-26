@@ -1,4 +1,10 @@
 {
   "name": "golden-team/gt-error-tracker",
-  "description": "This module Saves all errors and exceptions which occurred in your app to database"
+  "description": "This module Saves all errors and exceptions which occurred in your app to database",
+  "authors": [
+        {
+            "name": "Dima Melnik",
+            "email": "melnik.d00@gmail.com"
+        }
+    ]
 }
