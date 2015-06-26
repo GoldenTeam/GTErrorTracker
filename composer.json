@@ -1,4 +1,4 @@
 {
-  "name": "GTErrorTracker/GTErrorTracker",
+  "name": "golden-team/gt-error-tracker",
   "description": "This module Saves all errors and exceptions which occurred in your app to database"
 }
