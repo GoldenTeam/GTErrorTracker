@@ -1,0 +1,18 @@
+<?php
+
+use GTErrorTracker\H\EventType;
+?>
+
+<div class="row">
+<?php $this->GTTxt("Event Id"); ?>:<?php $this->item->show("event_logger_id");?><br>
+<?php $this->GTTxt("Date"); ?>:<?php $this->item->show("DateTimeFormat")?><br>
+<?php $this->GTTxt("Event Type"); ?>:<?php echo(EventType::getName($this->item->event_type));?><br>
+<?php $this->GTTxt("File : Line"); ?><br>
+<?php $this->item->show("event_file");?>:<?php $this->item->show("line");?><br>
+<?php $this->GTTxt("Event Message"); ?>:<br>
+<?php $this->item->show("message");?><br>
+<?php $this->GTTxt("Stack Trace"); ?>:<br>
+</div>
+<div class="row">
+<?php $this->item->show("stack_trace");?><br>
+</div>

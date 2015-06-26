@@ -1,0 +1,145 @@
+<?php
+
+namespace GTErrorTracker\Model\Gateway;
+
+use GTErrorTracker\Model\EventLogger;
+
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\ResultSet\HydratingResultSet;
+use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
+use Zend\Paginator\Adapter\AdapterInterface;
+use Zend\Db\Sql\Select;
+use Zend\ServiceManager\ServiceManager;
+
+class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface {
+
+    private $_count = -1;
+    private $_options = array();
+
+    function __construct(Adapter $dbAdapter, ServiceManager $sm) {
+        $this->table = $sm->get('config')["GTErrorTracker"]["GTTableName"];
+        parent::__construct($dbAdapter);
+    }
+
+    public function getEntity() {
+        return new EventLogger();
+    }
+
+    public function findByEventLoggerId($event_logger_id) {
+        $this->result("Can't find event by id");
+        $event_logger_id = intval($event_logger_id);
+        $item = $this->select(array('event_logger_id' => $event_logger_id))->current();
+        if ($item != null) {
+            $this->result("", false);
+        }
+        return $item;
+    }
+
+    public function remove(EventLogger $event_logger) {
+        $this->result("Can't delete event by id");
+        $event_logger_id  = intval($event_logger->get_event_logger_id());
+
+        $affected = $this->delete(array('event_logger_id' => $event_logger_id));
+        if ($affected >= 0) {
+            $this->result("Event was deleted successfully.", false);
+        }
+        return $affected;
+    }
+
+    public function save(EventLogger $eventLogger) {
+        try {
+            $this->result("Can't save event into the database");
+            $data = $eventLogger->getArrayCopy();
+            unset($data["event_logger_id"]);
+            $event_logger_id = $eventLogger->get_event_logger_id();
+            if ($event_logger_id == null || $event_logger_id < 0) {
+                $affected = $this->insert($data);
+                if ($affected > 0) {
+                    $eventLogger->set_event_logger_id($this->getLastInsertValue());
+                    $this->result("Event was created successfully.", false);
+                }
+            } else {
+                $affected = $this->update($data, array('event_logger_id' => $event_logger_id));
+                $this->result("Event was updated successfully.", false);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * @return HydratingResultSet
+     */
+    public function findAll() {
+        $this->result("Can't find all events");
+        $resultSet = $this->select();
+        if ($resultSet->count() >= 0) {
+            $this->result("", false);
+        }
+        return $resultSet;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Count elements of an user objects
+     * @link http://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     */
+    public function count() {
+        if ($this->_count <= 0) {
+            $where = new \Zend\Db\Sql\Where();
+
+            $sql = new Sql($this->adapter);
+            $select = $sql->select();
+
+            $select
+                ->from($this->table)
+                ->where($where)
+                ->columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(*)')));
+
+            $sqlTxt = $sql->getSqlStringForSqlObject($select);
+            $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
+            foreach($resultSet as $row) {
+                $this->_count = intval($row->count);
+                break;
+            }
+        }
+        return $this->_count;
+    }
+
+    /**
+     * Returns an collection of items for a page.
+     *
+     * @param  int $offset Page offset
+     * @param  int $itemCountPerPage Number of items per page
+     * @return array
+     */
+    public function getItems($offset, $limit) {
+        $options = $this->_options;
+        $items = $this->select(function(Select $select) use ($offset, $limit, $options) {
+            $where = new Where();
+            $select->where($where);
+            $select->offset($offset)->limit($limit);
+            $select->order('event_logger_id ASC');
+        });
+        if ($items->count() > 0) {
+            $this->result("", false);
+        }
+        return $items;
+    }
+
+    public function findByEventId($event_logger_id) {
+        $this->result("Can't find event by event id");
+        $event_logger_id = intval($event_logger_id);
+        $customEvent = $this->select(array('event_logger_id' => $event_logger_id))->current();
+        if ($customEvent != null) {
+            $this->result("", false);
+        }
+        return $customEvent;
+    }
+}
+?>

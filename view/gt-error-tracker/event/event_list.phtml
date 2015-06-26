@@ -1,0 +1,74 @@
+<?php
+
+use GTErrorTracker\H\EventType;
+?>
+<div class="row">
+    <h5 class="span total"><?php $this->GTTxt("Total"); ?></h5>
+    <h5 class="span1 total"><?php $this->GTHtml("count"); ?></h5>
+    <div class="pagination pagination-centered">
+        <?php echo $this->paginationControl($this->pager, 'Sliding', 'gt-error-tracker/pagination/GTdigg.phtml', array("route" => "gtevent", "action" => "index")); ?>
+    </div>
+</div>
+<div class="row">
+    <table class="table">
+        <thead>
+        <tr>
+            <th><?php $this->GTTxt("Event id"); ?></th>
+            <th><?php $this->GTTxt("Date"); ?></th>
+            <th><?php $this->GTTxt("Event Code"); ?></th>
+            <th><?php $this->GTTxt("Event Handler"); ?></th>
+            <th><?php $this->GTTxt("File"); ?>:<?php $this->txt("Line"); ?></th>
+            <th><?php $this->GTTxt("Message"); ?></th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <?php foreach ($this->pager as $item) { ?>
+            <tr class="<?php $item->show("CssClasses"); ?>"
+                data-event-id="<?php $item->show("event_logger_id")?>"
+                >
+                <td>
+                    <?php $item->show("event_logger_id")?>
+                </td>
+                <td>
+                    <?php $item->show("DateTimeFormat")?>
+                </td>
+                <td>
+                    <?php $item->show("event_code")?>
+                </td>
+                <td>
+                    <?php echo(EventType::getName($item->event_type));?>
+                </td>
+                <td>
+                    <div style="word-wrap: break-word;width:400px">
+                    <?php $item->show("event_file")?>:<?php $item->show("line")?>
+                    </div>
+                </td>
+                <td>
+                    <div style="word-wrap: break-word;width: 300px;">
+                    <?php $item->show("message")?>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="delete btn_event"
+                            data-btn-id="0"
+                            data-event-id="<?php $item->show("event_logger_id")?>"
+                            data-title="<?php $this->GTTxt("Delete Event"); ?>">
+                        <?php $this->GTTxt("Delete Event"); ?>
+                    </button>
+                </td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+
+</div>
+
+<div class="row">
+    <div class="pagination pagination-centered">
+        <?php echo $this->paginationControl($this->pager, 'Sliding', 'gt-error-tracker/pagination/GTdigg.phtml', array("route" => "gtevent", "action" => "index")); ?>
+    </div>
+    <h5 class="span total"><?php $this->GTTxt("Total"); ?></h5>
+    <h5 class="span1 total"><?php $this->GTHtml("count"); ?></h5>
+</div>

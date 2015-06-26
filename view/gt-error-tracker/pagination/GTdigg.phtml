@@ -1,0 +1,124 @@
+<?php
+/**
+ * Digg pagination style
+ * 
+ * @preview  « Previous  1 2 … 5 6 7 8 9 10 11 12 13 14 … 25 26  Next »
+ */
+$lenght = isset($this->lenght)?$this->lenght:10;
+
+?>
+
+<ul>
+    <li class="<?php echo($this->previous ? "" : "disabled"); ?>">
+        <?php if ($this->previous): ?>            
+            <a href="<?php echo $this->url($this->route, array('page' => $this->previous, 'action' => $this->action)); ?>" data-page="<?php echo $this->previous;?>">
+                <?php $this->GTTxt('Prev'); ?>
+            </a>
+        <?php else: ?>
+            <span><?php $this->GTTxt('Prev'); ?></span>
+        <?php endif ?>
+    </li>
+
+
+    <?php if ($this->pageCount < $lenght + 3): /* « Previous  1 2 3 4 5 6 7 8 9 10 11 12  Next » */ ?>
+        <?php for ($i = 1; $i <= $this->pageCount; $i++): ?>
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+                <?php if ($i == $this->current): ?>
+                    <span><?php echo $i ?></span>
+                <?php else: ?>
+                    <a href="<?php echo $this->url($this->route, array('action' => $this->action, 'page' => $i)); ?>"
+                       data-page="<?php echo $i?>"><?php echo $i ?></a>
+                <?php endif ?>
+            </li>
+        <?php endfor ?>
+
+    <?php elseif ($this->current < $lenght - 1): /* « Previous  1 2 3 4 5 6 7 8 9 10 … 25 26  Next » */ ?>
+        <?php for ($i = 1; $i <= $lenght; $i++): ?>
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+                <?php if ($i == $this->current): ?>
+                    <span><?php echo $i ?></span>
+                <?php else: ?>
+                    <a href="<?php echo $this->url($this->route, array('action' => $this->action, 'page' => $i)); ?>" data-page="<?php echo $i?>"><?php echo $i ?></a>
+                <?php endif ?>
+            </li>
+        <?php endfor ?>
+        <li>
+            <span>&hellip;</span>
+        </li>    
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => $this->pageCount - 1, 'action' => $this->action)); ?>" data-page="<?php echo $this->pageCount - 1 ?>">
+                <?php echo $this->pageCount - 1 ?>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => $this->pageCount, 'action' => $this->action)); ?>" data-page="<?php echo $this->pageCount ?>">
+                <?php echo $this->pageCount ?>
+            </a>
+        </li>
+    <?php elseif ($this->current > $this->pageCount - ($lenght - 2)): /* « Previous  1 2 … 17 18 19 20 21 22 23 24 25 26  Next » */ ?>
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => 1, 'action' => $this->action)); ?>" data-page="1">1</a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => 2, 'action' => $this->action)); ?>" data-page="2">2</a>
+        </li>
+        <li>
+            <span>&hellip;</span>
+        </li>    
+        <?php for ($i = $this->pageCount - ($lenght - 1); $i <= $this->pageCount; $i++): ?>
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+                <?php if ($i == $this->current): ?>
+                    <span><?php echo $i ?></span>
+                <?php else: ?>
+                    <a href="<?php echo $this->url($this->route, array('page' => $i, 'action' => $this->action)); ?>" data-page="<?php echo $i?>"><?php echo $i ?></a>
+                <?php endif ?>
+            </li>
+        <?php endfor ?>
+
+    <?php else: /* « Previous  1 2 … 5 6 7 8 9 10 11 12 13 14 … 25 26  Next » */ ?>
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => 1, 'action' => $this->action)); ?>" data-page="1">1</a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => 2, 'action' => $this->action)); ?>" data-page="2">2</a>
+        </li>
+        <li>
+            <span>&hellip;</span>
+        </li>    
+        <?php for ($i = $this->current - ($lenght / 2); $i <= $this->current + ($lenght/2); $i++): ?>
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+                <?php if ($i == $this->current): ?>
+                    <span><?php echo $i ?></span>
+                <?php else: ?>
+                    <a href="<?php echo $this->url($this->route, array('page' => $i, 'action' => $this->action)); ?>" data-page="<?php echo $i?>"><?php echo $i ?></a>
+                <?php endif ?>
+            </li>
+        <?php endfor ?>
+        <li>
+            <span>&hellip;</span>
+        </li>    
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => $this->pageCount - 1, 'action' => $this->action)); ?>" data-page="<?php echo $this->pageCount - 1?>">
+                <?php echo $this->pageCount - 1 ?>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url($this->route, array('page' => $this->pageCount, 'action' => $this->action)); ?>" data-page="<?php echo $this->pageCount?>">
+                <?php echo $this->pageCount ?>
+            </a>
+        </li>
+
+    <?php endif ?>
+
+    <li class="<?php echo($this->next ? "" : "disabled"); ?>">
+        <?php if ($this->next): ?>
+            <a href="<?php echo $this->url($this->route, array('page' => $this->next, 'action' => $this->action)); ?>" data-page="<?php echo $this->next?>">
+                <?php $this->GTTxt('Next'); ?>
+            </a>
+        <?php else: ?>
+            <span><?php $this->GTTxt('Next'); ?></span>
+        <?php endif ?>
+
+    </li>
+
+</ul>

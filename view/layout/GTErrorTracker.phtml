@@ -1,0 +1,87 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle($this->translate('GTErrorTracker'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+
+        <!-- Le styles -->
+        <?php
+        echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.css')
+                ->prependStylesheet($this->basePath() . '/css/style.css')
+                ->prependStylesheet($this->basePath() . '/css/bootstrap.css')
+        ?>
+
+        <!-- Scripts -->
+        <?php
+        echo $this->headScript()
+                ->prependFile('/js/calc.js')
+                ->prependFile('/js/main.js')
+                ->prependFile('/js/jstz.js')
+                ->prependFile('/js/moment.min.js')
+                ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+                ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+                ->prependFile($this->basePath() . '/js/jquery.min.js')
+        ?>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo masthead clearfix">
+                <ul class="nav nav-pills pull-right">
+                    <li><a href="http://www.humanengine.com/">GTErrorTracker</a></li>
+                    <li><a href="#"><?php $this->txt('About'); ?></a></li>
+                    <?php echo($this->userMenu()); ?>
+                </ul>
+                <a class="pull-left brand" href="/overview">
+                    <div class="text-error "><?php $this->txt('GTErrorTracker') ?></div>
+                </a>
+                <div class="pull-left muted title">
+                    Your Errors is in your DataBase
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div class="container">
+            <?php echo $this->content; ?>
+            <hr>
+            <footer>
+                <p>&copy; 2012 - <?php echo date('Y') ?> <?php $this->txt('GTErrorTracker'); ?>. <?php $this->txt('All rights reserved.'); ?></p>
+            </footer>        
+        </div>
+        <!-- /container -->
+        <?php echo $this->inlineScript() ?>
+        <div id="dialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="dialogHeader" aria-hidden="true">
+            <div class="notifier"></div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="dialogHeader">Dialog Header</h3>
+            </div>
+            <div class="modal-body">
+                <p>One fine body…</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php $this->txt('Cancel'); ?></button>
+                <button id="btnOk" class="btn btn-primary" ><?php $this->txt('Ok'); ?></button>
+            </div>
+        </div>
+        <div id="warningGradientOuterBarG">
+            <div id="warningGradientFrontBarG" class="warningGradientAnimationG">
+                <div class="warningGradientBarLineG">
+                </div>
+                <div class="warningGradientBarLineG">
+                </div>
+                <div class="warningGradientBarLineG">
+                </div>
+                <div class="warningGradientBarLineG">
+                </div>
+                <div class="warningGradientBarLineG">
+                </div>
+                <div class="warningGradientBarLineG">
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
