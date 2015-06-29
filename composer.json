@@ -3,7 +3,8 @@
   "description": "This module Saves all errors and exceptions which occurred in your app to database",
 
 "autoload": {
-    "psr-0": { "GTErrorTracker": "" }
+  
+  "classmap": ["src/"]
 },
 
   "authors": [
