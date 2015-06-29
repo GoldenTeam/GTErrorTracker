@@ -8,10 +8,7 @@
   },
 
   "autoload":{
-    "psr-0":{
-      "GTErrorTracker":"src"
-    },
-    "classmap": ["Module.php"]
+    "classmap": ["src/","Module.php"]
   },
 
   "authors": [
