@@ -7,6 +7,13 @@
     "zendframework/zendframework":"2.*"
   },
 
+  "autoload":{
+    "psr-0":{
+      "GTErrorTracker":"src"
+    },
+    "classmap": ["Module.php"]
+  },
+
   "authors": [
         {
             "name": "Dima Melnik",
