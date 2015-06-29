@@ -2,11 +2,9 @@
   "name": "golden-team/gt-error-tracker",
   "description": "This module Saves all errors and exceptions which occurred in your app to database",
 
-  "autoload":{
-    "psr-0":{
-      "GTErrorTracker":"src"
-    },
-    "classmap": ["Module.php"]
+  "require": {
+    "php": ">=5.3.3",
+    "zendframework/zendframework":"2.*"
   },
 
   "authors": [
