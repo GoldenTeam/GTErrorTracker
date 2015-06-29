@@ -4,7 +4,11 @@
 
 "autoload": {
   
-  "classmap": ["src/"]
+      "autoload":{
+        "psr-0":{
+            "GTErrorTracker":"src"
+        },
+        "classmap": ["Module.php"]
 },
 
   "authors": [
