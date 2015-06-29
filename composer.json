@@ -1,6 +1,11 @@
 {
   "name": "golden-team/gt-error-tracker",
   "description": "This module Saves all errors and exceptions which occurred in your app to database",
+
+"autoload": {
+    "psr-0": { "GTErrorTracker": "" }
+},
+
   "authors": [
         {
             "name": "Dima Melnik",
