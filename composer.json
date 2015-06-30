@@ -1,6 +1,5 @@
 {
   "name": "golden-team/gt-error-tracker",
-  "version": "1.0.0",
   "description": "This module Saves all errors and exceptions which occurred in your app to database",
   "require": {
     "php": ">=5.3.3",
