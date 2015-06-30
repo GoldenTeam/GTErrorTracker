@@ -1,6 +1,7 @@
 {
   "name": "golden-team/gt-error-tracker",
   "description": "This module Saves all errors and exceptions which occurred in your app to database",
+  "version": "1.0.3",
   "require": {
     "php": ">=5.3.3",
     "zendframework/zendframework":"2.*"
