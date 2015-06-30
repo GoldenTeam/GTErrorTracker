@@ -18,8 +18,6 @@
         <!-- Scripts -->
         <?php
         echo $this->headScript()
-                ->prependFile('/js/calc.js')
-                ->prependFile('/js/main.js')
                 ->prependFile('/js/jstz.js')
                 ->prependFile('/js/moment.min.js')
                 ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
