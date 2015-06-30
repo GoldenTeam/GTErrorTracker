@@ -90,7 +90,7 @@ class EventLogger extends GTBaseEntity {
             $this->_f_line = $args->getLine();
             $this->_f_event_code = "Exception:" . $args->getCode();
             $this->_f_stack_trace = $this->stackTraceProcessing($args->getTrace(), $args->getMessage());
-         } else {
+        } else {
             //Arguments Order
             //$errno, $errstr, $errfile, $errline, $trace
             $args = func_get_args();
@@ -126,9 +126,18 @@ class EventLogger extends GTBaseEntity {
 
         $event_hash = $this->getHash();
         $session = new Container('user');
+
         if($session->eventHash == $event_hash) {
 
-            $this->echoIfDevMode($session->lastEventId);
+            if($this->_f_date_time - $session->errorTime < 2) {
+
+                $this->echoIfDevMode($session->lastEventId);
+
+            } else {
+
+                $session->errorTime = $this->_f_date_time;         // save time when error has been occurred
+                $this->redirectIfDevMode($session->lastEventId);
+            }
 
         } else {
             $this->_f_event_hash = $event_hash;
@@ -139,6 +148,7 @@ class EventLogger extends GTBaseEntity {
                 $this->save();
                 $session->eventHash = $event_hash;                 // save new Hash to session
                 $session->lastEventId = $this->_f_event_logger_id; // save new ID to session
+                $session->errorTime = $this->_f_date_time;         // save time when error has been occurred
                 $this->redirectIfDevMode($session->lastEventId);
             }
         }
@@ -166,8 +176,9 @@ class EventLogger extends GTBaseEntity {
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
-                echo "Some Unexpected Error occurred. Please contact to administrator.";
-                die;
+
+                echo "<h1>Some Unexpected Error occurred. Please contact to administrator.</h1>";
+                //die;
             }
         }
     }
@@ -178,6 +189,7 @@ class EventLogger extends GTBaseEntity {
                 "/gtevent/show/event_id/" . $event_logger_id;
             echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
         } else {
+
             if ($this->_f_event_type == EventType::ERROR_PHP ||
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
