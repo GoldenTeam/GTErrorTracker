@@ -27,7 +27,6 @@ class Module {
                 $errorInfo = new EventLogger($serviceManager);
                 $errorInfo->set_event_type(EventType::EXCEPTION_DISPATCH);
                 $errorInfo->handle($exception);
-                die;
             }
         });
 
