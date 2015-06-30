@@ -31,12 +31,12 @@
         <div class="container">
             <div class="logo masthead clearfix">
                 <ul class="nav nav-pills pull-right">
-                    <li><a href="http://www.humanengine.com/">GTErrorTracker</a></li>
-                    <li><a href="#"><?php $this->txt('About'); ?></a></li>
+                    <li><a href="http://www.humanengine.com/">HumanEngine</a></li>
+                    <li><a href="#"><?php $this->GTTxt('About'); ?></a></li>
                     <?php echo($this->userMenu()); ?>
                 </ul>
                 <a class="pull-left brand" href="/overview">
-                    <div class="text-error "><?php $this->txt('GTErrorTracker') ?></div>
+                    <div class="text-error "><?php $this->GTTxt('GTErrorTracker') ?></div>
                 </a>
                 <div class="pull-left muted title">
                     Your Errors is in your DataBase
@@ -48,7 +48,7 @@
             <?php echo $this->content; ?>
             <hr>
             <footer>
-                <p>&copy; 2012 - <?php echo date('Y') ?> <?php $this->txt('GTErrorTracker'); ?>. <?php $this->txt('All rights reserved.'); ?></p>
+                <p>&copy; 2012 - <?php echo date('Y') ?> <?php $this->GTTxt('GTErrorTracker'); ?>. <?php $this->GTTxt('All rights reserved.'); ?></p>
             </footer>        
         </div>
         <!-- /container -->
@@ -63,8 +63,8 @@
                 <p>One fine body…</p>
             </div>
             <div class="modal-footer">
-                <button id="btnCancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php $this->txt('Cancel'); ?></button>
-                <button id="btnOk" class="btn btn-primary" ><?php $this->txt('Ok'); ?></button>
+                <button id="btnCancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php $this->GTTxt('Cancel'); ?></button>
+                <button id="btnOk" class="btn btn-primary" ><?php $this->GTTxt('Ok'); ?></button>
             </div>
         </div>
         <div id="warningGradientOuterBarG">
