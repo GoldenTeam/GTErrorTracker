@@ -18,7 +18,8 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
     private $_options = array();
 
     function __construct(Adapter $dbAdapter, ServiceManager $sm) {
-        $this->table = $sm->get('config')["GTErrorTracker"]["GTTableName"];
+        $config = $sm->get('config');
+        $this->table = $config["GTErrorTracker"]["GTTableName"];
         parent::__construct($dbAdapter);
     }
 
