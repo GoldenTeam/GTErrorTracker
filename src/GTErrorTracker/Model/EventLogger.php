@@ -142,7 +142,8 @@ class EventLogger extends GTBaseEntity {
         } else {
             $this->_f_event_hash = $event_hash;
 
-            $customConfig = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config')["GTErrorTracker"];
+            $config = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config');
+            $customConfig = $config["GTErrorTracker"];
 
             if ($customConfig["GTErrorTypesSaveToDb"][H\EventType::getName($this->_f_event_type)]) {
                 $this->save();
