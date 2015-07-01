@@ -14,12 +14,12 @@ function fatal_error_handler() {
     // if error exists and it is fatal
     if ($error = error_get_last() AND $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
         // Clean buffer (do not report standard error message)
-        ob_end_clean();
+        //ob_end_clean();
         // running error handler
         process_error_backtrace($error['type'], $error['message'], $error['file'], $error['line']);
     } else {
         // sending (output) buffer and its turning off
-        ob_end_flush();
+        //ob_end_flush();
     }
 }
 
