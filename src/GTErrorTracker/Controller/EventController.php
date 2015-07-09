@@ -106,6 +106,7 @@ class EventController extends AbstractActionController {
             $this->GTHead("js", array(
                 "typeahead", "GTErrorTracker/event-index",
                 "GTErrorTracker/gtmain",
+                "GTErrorTracker/event-show",
                 "Nutrition/user-detail-dialog"));
         }
         return $this->GTResult($result);
