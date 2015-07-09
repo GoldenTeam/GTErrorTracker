@@ -48,11 +48,7 @@ class EventController extends AbstractActionController {
         $session = new Container('user');
 
         $pageNum = $this->GTParam('page', 0);
-        if($pageNum==0) {
-            $pageNum =  $session->page;
-        } else {
-            $session->page = $pageNum;
-        }
+        $session->page = $pageNum;
 
         $EG = $this->GTGateway("EventLoggerGateway");
         $pager = new Paginator($EG);
@@ -87,6 +83,9 @@ class EventController extends AbstractActionController {
     }
 
     public function showAction() {
+        $session = new Container('user');
+        $pageNum =  $session->page;
+
         $event_logger_id = $this->GTParam('event_logger_id', 0);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
         $customEvent = $this->GTGateway("EventLoggerGateway")->findByEventId($event_logger_id);
@@ -94,7 +93,10 @@ class EventController extends AbstractActionController {
         if ($customEvent instanceof EventLogger) {
             $result = array(
                 "html" => $partial("gt-error-tracker/event/event_item.phtml",
-                    array("item" => $customEvent)));
+                    array(
+                        "item" => $customEvent,
+                        "pageNum" =>$pageNum
+                    )));
         } else {
             $result = array(
                 "html" => $partial("gt-error-tracker/emtpy_list.phtml",
@@ -103,11 +105,13 @@ class EventController extends AbstractActionController {
         if (!$this->getRequest()->isPost()) {
             $this->GTHead("css", array(
                 "GTErrorTracker/event-index",));
-            $this->GTHead("js", array(
-                "typeahead", "GTErrorTracker/event-index",
-                "GTErrorTracker/gtmain",
-                "GTErrorTracker/event-show",
-                "Nutrition/user-detail-dialog"));
+            $this->GTHead(
+                "js", array(
+                    "typeahead", "GTErrorTracker/event-index",
+                    "GTErrorTracker/gtmain",
+                    "GTErrorTracker/event-show",
+                    "Nutrition/user-detail-dialog")
+            );
         }
         return $this->GTResult($result);
     }
