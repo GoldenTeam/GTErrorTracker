@@ -4,6 +4,7 @@ use GTErrorTracker\H\EventType;
 ?>
 
 <div class="row">
+    <span data-page-info="<?php echo $pageNum;?>"></span>
 <?php $this->GTTxt("Event Id"); ?>:<?php $this->item->show("event_logger_id");?><br>
 <?php $this->GTTxt("Date"); ?>:<?php $this->item->show("DateTimeFormat")?><br>
 <?php $this->GTTxt("Event Type"); ?>:<?php echo(EventType::getName($this->item->event_type));?><br>

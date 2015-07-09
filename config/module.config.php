@@ -18,10 +18,11 @@ return array(
             'gtevent' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/gtevent[/:action][/event_id/:event_logger_id]',
+                    'route' => '/gtevent[/:action][/page/:page][/event_id/:event_logger_id]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'event_logger_id' => '[0-9]+',
+                        'event_logger_id' => '[0-9]*',
+                        'page' => '[0-9]*',
                     ),
                     'defaults' => array(
                         'controller' => 'GTErrorTracker\Controller\Event',

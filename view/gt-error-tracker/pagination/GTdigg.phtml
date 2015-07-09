@@ -22,7 +22,8 @@ $lenght = isset($this->lenght)?$this->lenght:10;
 
     <?php if ($this->pageCount < $lenght + 3): /* « Previous  1 2 3 4 5 6 7 8 9 10 11 12  Next » */ ?>
         <?php for ($i = 1; $i <= $this->pageCount; $i++): ?>
-            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>"
+            data-pageNum="<?php echo($i == $this->current ? $i : ""); ?>">
                 <?php if ($i == $this->current): ?>
                     <span><?php echo $i ?></span>
                 <?php else: ?>
@@ -34,7 +35,9 @@ $lenght = isset($this->lenght)?$this->lenght:10;
 
     <?php elseif ($this->current < $lenght - 1): /* « Previous  1 2 3 4 5 6 7 8 9 10 … 25 26  Next » */ ?>
         <?php for ($i = 1; $i <= $lenght; $i++): ?>
-            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>"
+                 data-pageNum="<?php echo($i == $this->current ? $i : ""); ?>"
+                >
                 <?php if ($i == $this->current): ?>
                     <span><?php echo $i ?></span>
                 <?php else: ?>
@@ -66,7 +69,9 @@ $lenght = isset($this->lenght)?$this->lenght:10;
             <span>&hellip;</span>
         </li>    
         <?php for ($i = $this->pageCount - ($lenght - 1); $i <= $this->pageCount; $i++): ?>
-            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>"
+                 data-pageNum="<?php echo($i == $this->current ? $i : ""); ?>"
+                >
                 <?php if ($i == $this->current): ?>
                     <span><?php echo $i ?></span>
                 <?php else: ?>
@@ -86,7 +91,9 @@ $lenght = isset($this->lenght)?$this->lenght:10;
             <span>&hellip;</span>
         </li>    
         <?php for ($i = $this->current - ($lenght / 2); $i <= $this->current + ($lenght/2); $i++): ?>
-            <li class="<?php echo($i == $this->current ? "active" : ""); ?>">
+            <li class="<?php echo($i == $this->current ? "active" : ""); ?>"
+                 data-pageNum=<?php echo($i == $this->current ? $i : ""); ?>"
+                >
                 <?php if ($i == $this->current): ?>
                     <span><?php echo $i ?></span>
                 <?php else: ?>
