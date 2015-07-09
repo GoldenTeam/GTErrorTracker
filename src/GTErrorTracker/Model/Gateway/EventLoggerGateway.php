@@ -125,7 +125,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $where = new Where();
             $select->where($where);
             $select->offset($offset)->limit($limit);
-            $select->order('event_logger_id ASC');
+            $select->order('date_time DESC');
         });
         if ($items->count() > 0) {
             $this->result("", false);

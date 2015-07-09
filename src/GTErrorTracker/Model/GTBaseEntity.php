@@ -108,6 +108,12 @@ class GTBaseEntity {
         assert(is_string($gatewayName) && strlen(trim($gatewayName)) > 0);
         return $this->_serviceLocator->get("GTErrorTracker\\Model\\Gateway\\" . $gatewayName);
     }
+    public function GlobalGateway($gatewayName) {
+        assert(is_string($gatewayName) && strlen(trim($gatewayName)) > 0);
+        return $this->_serviceLocator->get($gatewayName);
+    }
+
+
 
 }
 

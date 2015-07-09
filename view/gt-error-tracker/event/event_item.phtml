@@ -12,6 +12,10 @@ use GTErrorTracker\H\EventType;
 <?php $this->GTTxt("Event Message"); ?>:<br>
 <?php $this->item->show("message");?><br>
 <?php $this->GTTxt("Stack Trace"); ?>:<br>
+
+<?php $this->GTTxt("User Id");?>:<?php $this->item->show("user_id");?><br>
+<?php $this->GTTxt("Device Id");?>:<?php $this->item->show("device_id");?><br>
+
 </div>
 <div class="row">
 <?php $this->item->show("stack_trace");?><br>

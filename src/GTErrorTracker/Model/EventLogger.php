@@ -6,6 +6,10 @@ use GTErrorTracker\H;
 use GTErrorTracker\H\EventType;
 
 use GTErrorTracker\H\ServiceLocatorFactory;
+
+use Nutrition\Model\User;
+
+
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\PhpRenderer;
@@ -27,6 +31,24 @@ class EventLogger extends GTBaseEntity {
     private $_f_event_hash = null;
 
     protected $serviceManager;
+
+    private $_user = null;
+
+
+
+    public function get_user() {
+        if (!$this->_user && $this->get_user_id() > 0) {
+            $sets = $this->GlobalGateway('Nutrition\Model\Gateway\UserGateway');
+            $this->_user = $sets->findByUserId($this->get_user_id());
+        }
+        if (!$this->_user instanceof User) {
+            $this->_user = new User($this->getServiceLocator());
+            $this->_user->set_user_id($this->get_user_id());
+        }
+        return $this->_user;
+    }
+
+
 
     public function get_event_logger_id() { return $this->_f_event_logger_id; }
     public function get_event_file()      { return $this->_f_event_file; }

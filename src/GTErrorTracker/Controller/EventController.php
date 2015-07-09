@@ -13,6 +13,7 @@ use GTErrorTracker\Model\EventLogger;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Paginator\Paginator;
+use Zend\Session\Container;
 
 class EventController extends AbstractActionController {
 
@@ -43,7 +44,16 @@ class EventController extends AbstractActionController {
     }
 
     public function indexAction() {
+
+        $session = new Container('user');
+
         $pageNum = $this->GTParam('page', 0);
+        if($pageNum==0) {
+            $pageNum =  $session->page;
+        } else {
+            $session->page = $pageNum;
+        }
+
         $EG = $this->GTGateway("EventLoggerGateway");
         $pager = new Paginator($EG);
         $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
@@ -94,7 +104,9 @@ class EventController extends AbstractActionController {
             $this->GTHead("css", array(
                 "GTErrorTracker/event-index",));
             $this->GTHead("js", array(
-                "typeahead", "GTErrorTracker/event-index", "GTErrorTracker/gtmain"));
+                "typeahead", "GTErrorTracker/event-index",
+                "GTErrorTracker/gtmain",
+                "Nutrition/user-detail-dialog"));
         }
         return $this->GTResult($result);
     }
