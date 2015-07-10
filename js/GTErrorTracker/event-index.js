@@ -31,7 +31,7 @@ var eventList;
                                 page:_page
                             };
 
-                        GTm.post("gtevent/delete", data, function(data) {
+                        GTm.post("/gtevent/delete", data, function(data) {
                             $("#events").html(data.pagerHtml);
                             _this.initPager();
                         });
@@ -43,7 +43,9 @@ var eventList;
 
         $(".event_list .list table tr td:not(:has(button))").click(function() {
             var eventId = $(this).parent().attr("data-event-id");
+
             window.location = "/gtevent/show/event_id/" + eventId;
+
             return false;
         });
     }
@@ -59,6 +61,9 @@ var eventList;
             _page = data.page;
             _this.initPager();
         });
+
+        window.history.pushState(null, null, '/gtevent/page/'+ page);
+
     }
 
 })());
