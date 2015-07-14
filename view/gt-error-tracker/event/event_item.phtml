@@ -41,3 +41,11 @@ use GTErrorTracker\H\EventType;
     <?php $this->GTTxt("Stack Trace"); ?>:<br>
     <?php $this->item->show("stack_trace");?><br>
 </div>
+
+<div class="row">
+    <?php $this->GTTxt("XDebugMessage"); ?>:<br>
+
+    <table>
+        <?php $this->item->show("xdebug_message");?>
+    </table>
+</div>

@@ -25,6 +25,7 @@ class EventLogger extends GTBaseEntity {
     private $_f_user_id = null;
     private $_f_device_id = null;
     private $_f_event_hash = null;
+    private $_f_xdebug_message = null;
 
     protected $serviceManager;
 
@@ -63,6 +64,7 @@ class EventLogger extends GTBaseEntity {
     public function get_device_id()       { return $this->_f_device_id; }
     public function get_date_time()       { return $this->_f_date_time; }
     public function get_event_hash()      { return $this->_f_event_hash; }
+    public function get_xdebug_message()  { return $this->_f_xdebug_message; }
 
     public function set_event_logger_id($event_logger_id) { $this->_f_event_logger_id = $event_logger_id; return $this; }
     public function set_event_file($file)                 { $this->_f_event_file = $file; return $this; }
@@ -75,6 +77,7 @@ class EventLogger extends GTBaseEntity {
     public function set_device_id($device_id)             { $this->_f_device_id = $device_id; return $this; }
     public function set_date_time($date)                  { $this->_f_date_time = $date; return $this; }
     public function set_event_hash($event_hash)           { $this->_f_event_hash = $event_hash; return $this; }
+    public function set_xdebug_message($xdebug_message)   { $this->_f_xdebug_message = $xdebug_message; return $this; }
 
     function __construct($_serviceLocator = null) {
         parent::__construct($_serviceLocator);
@@ -112,6 +115,11 @@ class EventLogger extends GTBaseEntity {
             $this->_f_line = $args->getLine();
             $this->_f_event_code = "Exception:" . $args->getCode();
             $this->_f_stack_trace = $this->stackTraceProcessing($args->getTrace(), $args->getMessage());
+
+            if (isset($args->xdebug_message)) {
+                $this->_f_xdebug_message = $args->xdebug_message;
+            }
+
         } else {
             //Arguments Order
             //$errno, $errstr, $errfile, $errline, $trace
