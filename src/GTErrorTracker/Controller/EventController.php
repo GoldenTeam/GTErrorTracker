@@ -44,7 +44,6 @@ class EventController extends AbstractActionController {
     }
 
     public function indexAction() {
-
         $session = new Container('user');
 
         $pageNum = $this->GTParam('page', 0);
@@ -95,13 +94,13 @@ class EventController extends AbstractActionController {
                 "html" => $partial("gt-error-tracker/event/event_item.phtml",
                     array(
                         "item" => $customEvent,
-                        "pageNum" =>$pageNum
+                        "pageNum" => $pageNum
                     )));
         } else {
             $result = array(
                 "html" => $partial("gt-error-tracker/emtpy_list.phtml",
                     array('message' => $result['message'])));
-            }
+        }
         if (!$this->getRequest()->isPost()) {
             $this->GTHead("css", array(
                 "GTErrorTracker/event-index",));

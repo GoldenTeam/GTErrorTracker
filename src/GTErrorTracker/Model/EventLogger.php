@@ -4,11 +4,7 @@ namespace GTErrorTracker\Model;
 
 use GTErrorTracker\H;
 use GTErrorTracker\H\EventType;
-
 use GTErrorTracker\H\ServiceLocatorFactory;
-
-use Nutrition\Model\User;
-
 
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
@@ -32,23 +28,29 @@ class EventLogger extends GTBaseEntity {
 
     protected $serviceManager;
 
+    /**
+     * User
+     * @var GTUserInterface
+     */
     private $_user = null;
 
-
-
+    /**
+     * @return GTUserInterface
+     */
     public function get_user() {
+
         if (!$this->_user && $this->get_user_id() > 0) {
-            $sets = $this->GlobalGateway('Nutrition\Model\Gateway\UserGateway');
-            $this->_user = $sets->findByUserId($this->get_user_id());
-        }
-        if (!$this->_user instanceof User) {
-            $this->_user = new User($this->getServiceLocator());
-            $this->_user->set_user_id($this->get_user_id());
+            $hasGTUserGateway = ServiceLocatorFactory::getInstance()->getServiceLocator()->has('gt_user_gateway');
+            if ($hasGTUserGateway) {
+                $sets = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('gt_user_gateway');
+                $user = $sets->findById($this->get_user_id());
+                if ($user instanceof GTUserInterface) {
+                    $this->_user = $user;
+                }
+            }
         }
         return $this->_user;
     }
-
-
 
     public function get_event_logger_id() { return $this->_f_event_logger_id; }
     public function get_event_file()      { return $this->_f_event_file; }
@@ -82,9 +84,6 @@ class EventLogger extends GTBaseEntity {
         $session = new Container('mobile');
         $this->_f_device_id = isset($session->device_id)?$session->device_id:null;
 
-        $session = new Container('user');
-        $this->_f_user_id = isset($session->user_id)?$session->user_id:null;
-
     }
 
     public function getCssClasses() {
@@ -104,7 +103,8 @@ class EventLogger extends GTBaseEntity {
         }
     }
 
-    public function handle() {
+    public function handle()
+    {
         $args = func_get_arg(0);
         if ($args instanceof \Exception) {
             $this->_f_event_file = $args->getFile();
@@ -124,26 +124,63 @@ class EventLogger extends GTBaseEntity {
             $type = "Undefined";
 
             switch ($errno) {
-                case E_ERROR            :         $type = "E_ERROR";               break;
-                case E_WARNING          :         $type = "E_WARNING";             break;
-                case E_PARSE            :         $type = "E_PARSE";               break;
-                case E_NOTICE           :         $type = "E_NOTICE";              break;
-                case E_CORE_ERROR       :         $type = "E_CORE_ERROR";          break;
-                case E_CORE_WARNING     :         $type = "E_CORE_WARNING";        break;
-                case E_COMPILE_ERROR    :         $type = "E_COMPILE_ERROR";       break;
-                case E_COMPILE_WARNING  :         $type = "E_COMPILE_WARNING";     break;
-                case E_USER_ERROR       :         $type = "E_USER_ERROR";          break;
-                case E_USER_WARNING     :         $type = "E_USER_WARNING";        break;
-                case E_USER_NOTICE      :         $type = "E_USER_NOTICE";         break;
-                case E_STRICT           :         $type = "E_STRICT";              break;
-                case E_RECOVERABLE_ERROR:         $type = "E_RECOVERABLE_ERROR";   break;
-                case E_DEPRECATED       :         $type = "E_DEPRECATED";          break;
-                case E_USER_DEPRECATED  :         $type = "E_USER_DEPRECATED";     break;
+                case E_ERROR            :
+                    $type = "E_ERROR";
+                    break;
+                case E_WARNING          :
+                    $type = "E_WARNING";
+                    break;
+                case E_PARSE            :
+                    $type = "E_PARSE";
+                    break;
+                case E_NOTICE           :
+                    $type = "E_NOTICE";
+                    break;
+                case E_CORE_ERROR       :
+                    $type = "E_CORE_ERROR";
+                    break;
+                case E_CORE_WARNING     :
+                    $type = "E_CORE_WARNING";
+                    break;
+                case E_COMPILE_ERROR    :
+                    $type = "E_COMPILE_ERROR";
+                    break;
+                case E_COMPILE_WARNING  :
+                    $type = "E_COMPILE_WARNING";
+                    break;
+                case E_USER_ERROR       :
+                    $type = "E_USER_ERROR";
+                    break;
+                case E_USER_WARNING     :
+                    $type = "E_USER_WARNING";
+                    break;
+                case E_USER_NOTICE      :
+                    $type = "E_USER_NOTICE";
+                    break;
+                case E_STRICT           :
+                    $type = "E_STRICT";
+                    break;
+                case E_RECOVERABLE_ERROR:
+                    $type = "E_RECOVERABLE_ERROR";
+                    break;
+                case E_DEPRECATED       :
+                    $type = "E_DEPRECATED";
+                    break;
+                case E_USER_DEPRECATED  :
+                    $type = "E_USER_DEPRECATED";
+                    break;
             }
             $this->_f_event_code = $type;
             $this->_f_message = "Backtrace from $this->_f_event_code $errstr at $this->_f_event_file $this->_f_line ";
             $this->_f_stack_trace = $this->stackTraceProcessing($trace, $this->_f_message);
+        }
 
+        $hasGTCurrentUser = ServiceLocatorFactory::getInstance()->getServiceLocator()->has('gt_current_user');
+        if ($hasGTCurrentUser) {
+            $user = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('gt_current_user');
+            if ($user instanceof GTUserInterface) {
+                $this->_f_user_id = $user->getId();
+            }
         }
 
         $event_hash = $this->getHash();
@@ -201,7 +238,7 @@ class EventLogger extends GTBaseEntity {
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
 
                 echo "<h1>Some Unexpected Error occurred. Please contact to administrator.</h1>";
-                //die;
+                die;
             }
         }
     }

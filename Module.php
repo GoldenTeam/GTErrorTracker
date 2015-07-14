@@ -71,6 +71,9 @@ class Module {
                     $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
                     return new EventLoggerGateway($dbAdapter, $sm);
                 },
+                'gt_user_entity' => function () {
+                    return null;
+                },
             )
         );
     }
