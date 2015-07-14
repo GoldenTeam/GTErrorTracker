@@ -92,7 +92,7 @@ $lenght = isset($this->lenght)?$this->lenght:10;
         </li>    
         <?php for ($i = $this->current - ($lenght / 2); $i <= $this->current + ($lenght/2); $i++): ?>
             <li class="<?php echo($i == $this->current ? "active" : ""); ?>"
-                 data-pageNum=<?php echo($i == $this->current ? $i : ""); ?>"
+                 data-pageNum="<?php echo($i == $this->current ? $i : ""); ?>"
                 >
                 <?php if ($i == $this->current): ?>
                     <span><?php echo $i ?></span>
