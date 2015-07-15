@@ -3,9 +3,11 @@
 namespace GTErrorTracker\Model\Gateway;
 
 use GTErrorTracker\Model\EventLogger;
+use GTErrorTracker\H;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\HydratingResultSet;
+use Zend\Db\Sql\Delete;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Paginator\Adapter\AdapterInterface;
@@ -26,6 +28,63 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
     public function getEntity() {
         return new EventLogger();
     }
+
+
+    public function deteteByParams($params) {
+
+        $time = H\Env::getDateTime()->getTimestamp();
+        echo "$time\n\n";
+        echo strtotime($time);
+
+
+        $result['EXCEPTION_DISPATCH'] = $this->delete(function (Delete $delete) use ($params, $time) {
+            $where = new Where();
+            if ($params['GTErrorTypesDeleteFromDb']['EXCEPTION_DISPATCH']) {
+                $where->expression("event_type = 1 AND date_time < ?",$time - $params['GTErrorTypesDeleteFromDbByTime']['EXCEPTION_DISPATCH'] );
+                $delete->where($where);
+            }
+        });
+        $result['EXCEPTION_RENDER'] = $this->delete(function (Delete $delete) use ($params, $time) {
+            $where = new Where();
+            if ($params['GTErrorTypesDeleteFromDb']['EXCEPTION_RENDER']) {
+                $where->expression("event_type = 2 AND date_time < ?",$time - $params['GTErrorTypesDeleteFromDbByTime']['EXCEPTION_RENDER'] );
+                $delete->where($where);
+            }
+        });
+        $result['ERROR_PHP'] = $this->delete(function (Delete $delete) use ($params, $time) {
+            $where = new Where();
+            if ($params['GTErrorTypesDeleteFromDb']['ERROR_PHP']) {
+                $where->expression("event_type = 3 AND date_time < ?",$time - $params['GTErrorTypesDeleteFromDbByTime']['ERROR_PHP'] );
+                $delete->where($where);
+            }
+        });
+        $result['EXCEPTION_PHP'] = $this->delete(function (Delete $delete) use ($params, $time) {
+            $where = new Where();
+            if ($params['GTErrorTypesDeleteFromDb']['EXCEPTION_PHP']) {
+                $where->expression("event_type = 4 AND date_time < ?",$time - $params['GTErrorTypesDeleteFromDbByTime']['EXCEPTION_PHP'] );
+                $delete->where($where);
+            }
+        });
+        $result['WARNING_PHP'] = $this->delete(function (Delete $delete) use ($params, $time) {
+            $where = new Where();
+            if ($params['GTErrorTypesDeleteFromDb']['WARNING_PHP']) {
+                $where->expression("event_type = 5 AND date_time < ?",$time - $params['GTErrorTypesDeleteFromDbByTime']['WARNING_PHP'] );
+                $delete->where($where);
+            }
+        });
+        $result['NOTICE_PHP'] = $this->delete(function (Delete $delete) use ($params, $time) {
+            $where = new Where();
+            if ($params['GTErrorTypesDeleteFromDb']['NOTICE_PHP']) {
+                $where->expression("event_type = 6 AND date_time < ?",$time - $params['GTErrorTypesDeleteFromDbByTime']['NOTICE_PHP'] );
+                $delete->where($where);
+            }
+        });
+
+        return $result;
+    }
+
+
+
 
     public function findByEventLoggerId($event_logger_id) {
         $this->result("Can't find event by id");
