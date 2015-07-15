@@ -46,6 +46,9 @@ class EventController extends AbstractActionController {
     public function indexAction() {
         $session = new Container('user');
 
+        $config = $this->getServiceLocator()->get('config');
+        $customConfig = $config["GTErrorTracker"];
+
         $pageNum = $this->GTParam('page', 0);
         $session->page = $pageNum;
 
@@ -61,22 +64,21 @@ class EventController extends AbstractActionController {
 
         );
         if (!$this->getRequest()->isPost()) {
-            $this->GTHead("css", array(
-                "GTErrorTracker/event-index",));
-            $this->GTHead("js", array(
-                "typeahead", "GTErrorTracker/event-index", "GTErrorTracker/gtmain"));
+            $this->GTHead("css", $customConfig['LoadCss']['indexAction']);
+            $this->GTHead("js",  $customConfig['LoadJs']['indexAction']);
             $this->GTHead("init", array("eventList.init(".$pageNum.");"));
         }
         return $this->GTResult($result);
     }
 
     public function errorAction() {
+        $config = $this->getServiceLocator()->get('config');
+        $customConfig = $config["GTErrorTracker"];
+
         $result = array("message" => "Some Error Occurred. Please Contact to the Administrator");
         if (!$this->getRequest()->isPost()) {
-            $this->GTHead("css", array(
-                "GTErrorTracker/event-index",));
-            $this->GTHead("js", array(
-                "typeahead", "GTErrorTracker/event-index", "GTErrorTracker/gtmain"));
+            $this->GTHead("css", $customConfig['LoadCss']['indexAction']);
+            $this->GTHead("js",  $customConfig['LoadJs']['indexAction']);
         }
         return $this->GTResult($result);
     }
@@ -85,35 +87,51 @@ class EventController extends AbstractActionController {
         $session = new Container('user');
         $pageNum =  $session->page;
 
+        $config = $this->getServiceLocator()->get('config');
+        $customConfig = $config["GTErrorTracker"];
+
         $event_logger_id = $this->GTParam('event_logger_id', 0);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
         $customEvent = $this->GTGateway("EventLoggerGateway")->findByEventId($event_logger_id);
         $result = H\GTResult::to();
         if ($customEvent instanceof EventLogger) {
-            $result = array(
-                "html" => $partial("gt-error-tracker/event/event_item.phtml",
-                    array(
-                        "item" => $customEvent,
-                        "pageNum" => $pageNum
-                    )));
+            if ($customEvent->get_xdebug_message()!=null) {
+                $result = array(
+                    "html" =>
+                        $partial("gt-error-tracker/event/event_item.phtml",
+                            array(
+                                "item" => $customEvent,
+                                "pageNum" => $pageNum
+                            )
+                        ) .
+                        $partial("gt-error-tracker/event/xdebug_message.phtml",
+                            array(
+                                "item" => $customEvent
+                            )
+                        )
+                );
+            } else {
+                $result = array(
+                    "html" =>
+                        $partial("gt-error-tracker/event/event_item.phtml",
+                            array(
+                                "item" => $customEvent,
+                                "pageNum" => $pageNum
+                            )
+                        )
+                );
+            }
+
         } else {
             $result = array(
                 "html" => $partial("gt-error-tracker/emtpy_list.phtml",
                     array('message' => $result['message'])));
         }
         if (!$this->getRequest()->isPost()) {
-            $this->GTHead("css", array(
-                "GTErrorTracker/event-index",));
-            $this->GTHead(
-                "js", array(
-                    "typeahead", "GTErrorTracker/event-index",
-                    "GTErrorTracker/gtmain",
-                    "GTErrorTracker/event-show",
-                    "Nutrition/user-detail-dialog")
-            );
+            $this->GTHead("css", $customConfig['LoadCss']['showAction']);
+            $this->GTHead("js",  $customConfig['LoadJs']['showAction']);
         }
         return $this->GTResult($result);
     }
 }
-
 ?>
