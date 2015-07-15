@@ -3,8 +3,26 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'GTErrorTracker\Controller\Event' => 'GTErrorTracker\Controller\EventController',
+            'GTErrorTracker\Controller\Cron' => 'GTErrorTracker\Controller\CronController'
         ),
     ),
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                'cron_delete' => array(
+                    'options' => array(
+                        'route' => 'cron_delete',//php index.php cron_delete
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'GTErrorTracker\Controller',
+                            'controller' => 'cron',
+                            'action' => 'delete'
+                        ),
+                    ),
+                ),
+            )
+        )
+    ),
+
     'controller_plugins' => array(
         'invokables' => array(
             'GTHead' => 'GTErrorTracker\Controller\Plugin\GTHead',
