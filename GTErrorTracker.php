@@ -16,7 +16,8 @@ function fatal_error_handler() {
         // Clean buffer (do not report standard error message)
         //ob_end_clean();
         // running error handler
-        process_error_backtrace($error['type'], $error['message'], $error['file'], $error['line'],$error['errcontext']);
+        $errcontext = "errcontext is not available after (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)";
+        process_error_backtrace($error['type'], $error['message'], $error['file'], $error['line'], $errcontext);
     } else {
         // sending (output) buffer and its turning off
         //ob_end_flush();
