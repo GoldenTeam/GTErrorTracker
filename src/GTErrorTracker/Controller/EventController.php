@@ -96,31 +96,30 @@ class EventController extends AbstractActionController {
         $result = H\GTResult::to();
         if ($customEvent instanceof EventLogger) {
             if ($customEvent->get_xdebug_message()!=null) {
-                $result = array(
-                    "html" =>
-                        $partial("gt-error-tracker/event/event_item.phtml",
-                            array(
-                                "item" => $customEvent,
-                                "pageNum" => $pageNum
-                            )
-                        ) .
-                        $partial("gt-error-tracker/event/xdebug_message.phtml",
-                            array(
-                                "item" => $customEvent
-                            )
-                        )
+                $xdebug_message = $partial("gt-error-tracker/event/xdebug_message.phtml",
+                    array("item" => $customEvent)
                 );
             } else {
+                $xdebug_message = "xdebug message is not available";
+
+            }
+            if ($customEvent->get_variables_dump()!=null) {
+                $variables_dump = $partial("gt-error-tracker/event/variables_dump.phtml",
+                    array("item" => $customEvent)
+                );
+            } else {
+                $variables_dump = "Dump of variables is not available";
+            }
                 $result = array(
                     "html" =>
                         $partial("gt-error-tracker/event/event_item.phtml",
-                            array(
-                                "item" => $customEvent,
-                                "pageNum" => $pageNum
+                            array("item" => $customEvent,
+                                "pageNum" => $pageNum,
+                                "xdebug_message" =>  $xdebug_message,
+                                "variables_dump" => $variables_dump
                             )
                         )
                 );
-            }
 
         } else {
             $result = array(

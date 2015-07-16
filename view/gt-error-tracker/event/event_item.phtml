@@ -12,32 +12,26 @@ use GTErrorTracker\H\EventType;
     <?php $this->item->show("event_file");?>:<?php $this->item->show("line");?><br>
     <?php $this->GTTxt("Event Message"); ?>:<br>
     <?php $this->item->show("message");?><br>
-
     <?php $this->GTTxt("User");?>:
 
     <?php $user = $this->item->get_user();?>
     <?php if($user instanceof \GTErrorTracker\Model\GTUserInterface){?>
 
         <div class="user_info" data-user-id="<?php echo $user->getId(); ?>">
-
-            <?php $user->show("DisplayName");
-
-            ?>
+            <?php $user->show("DisplayName");?>
         </div>
     <?php } else {
-
         $this->GTTxt("No User available");
 
-    }?>
-
-
-
-
-    <br><?php $this->GTTxt("Device Id");?>:<?php $this->item->show("device_id");?>
-
+    }?><br>
+    <?php $this->GTTxt("Device Id");?>:<?php $this->item->show("device_id");?>
 
 </div>
+
 <div class="row">
     <?php $this->GTTxt("Stack Trace"); ?>:<br>
     <?php $this->item->show("stack_trace");?><br>
 </div>
+
+<?php echo $this->xdebug_message;?><br>
+<?php echo $this->variables_dump;?><br>

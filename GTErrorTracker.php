@@ -16,7 +16,7 @@ function fatal_error_handler() {
         // Clean buffer (do not report standard error message)
         //ob_end_clean();
         // running error handler
-        process_error_backtrace($error['type'], $error['message'], $error['file'], $error['line']);
+        process_error_backtrace($error['type'], $error['message'], $error['file'], $error['line'],$error['errcontext']);
     } else {
         // sending (output) buffer and its turning off
         //ob_end_flush();
@@ -29,6 +29,50 @@ function process_exception_backtrace($exception) {
     $customEvent->set_event_type(EventType::EXCEPTION_PHP);
     $customEvent->handle($exception);
     die();
+}
+
+
+function grab_dump($var)
+{
+    ob_start();
+    var_dump($var);
+    return ob_get_clean();
+}
+
+function process_error_backtrace($errno, $errstr, $errfile, $errline, $errcontext) {
+    $sm = ServiceLocatorFactory::getInstance()->getServiceLocator();
+    $customEvent = new EventLogger($sm);
+
+    $variablesDump = grab_dump($errcontext);
+
+
+    switch ($errno) {
+        case E_ERROR             :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+        case E_WARNING           :    $errorDangerLevel = EventType::WARNING_PHP;  break;
+        case E_PARSE             :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+        case E_NOTICE            :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
+        case E_CORE_ERROR        :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+        case E_CORE_WARNING      :    $errorDangerLevel = EventType::WARNING_PHP;  break;
+        case E_COMPILE_ERROR     :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+        case E_COMPILE_WARNING   :    $errorDangerLevel = EventType::WARNING_PHP;  break;
+        case E_USER_ERROR        :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+        case E_USER_WARNING      :    $errorDangerLevel = EventType::WARNING_PHP;  break;
+        case E_USER_NOTICE       :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
+        case E_STRICT            :    $errorDangerLevel = EventType::WARNING_PHP;  break;
+        case E_RECOVERABLE_ERROR :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+        case E_DEPRECATED        :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
+        case E_USER_DEPRECATED   :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
+        default                  :    $errorDangerLevel = EventType::ERROR_PHP;    break;
+    }
+
+    $customEvent->set_event_type($errorDangerLevel);
+    $trace = debug_backtrace();
+    array_shift($trace);
+    $customEvent->handle($errno, $errstr, $errfile, $errline, $trace, $variablesDump);
+
+    if ($errorDangerLevel == EventType::ERROR_PHP) {
+        die;
+    }
 }
 
 /* http://php.net/manual/en/errorfunc.constants.php
@@ -103,35 +147,4 @@ All errors and warnings, as supported, except of level E_STRICT prior to PHP 5.4
 32767 in PHP 5.4.x, 30719 in PHP 5.3.x, 6143 in PHP 5.2.x, 2047 previously
 
 */
-function process_error_backtrace($errno, $errstr, $errfile, $errline) {
-    $sm = ServiceLocatorFactory::getInstance()->getServiceLocator();
-    $customEvent = new EventLogger($sm);
 
-    switch ($errno) {
-        case E_ERROR             :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-        case E_WARNING           :    $errorDangerLevel = EventType::WARNING_PHP;  break;
-        case E_PARSE             :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-        case E_NOTICE            :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
-        case E_CORE_ERROR        :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-        case E_CORE_WARNING      :    $errorDangerLevel = EventType::WARNING_PHP;  break;
-        case E_COMPILE_ERROR     :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-        case E_COMPILE_WARNING   :    $errorDangerLevel = EventType::WARNING_PHP;  break;
-        case E_USER_ERROR        :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-        case E_USER_WARNING      :    $errorDangerLevel = EventType::WARNING_PHP;  break;
-        case E_USER_NOTICE       :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
-        case E_STRICT            :    $errorDangerLevel = EventType::WARNING_PHP;  break;
-        case E_RECOVERABLE_ERROR :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-        case E_DEPRECATED        :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
-        case E_USER_DEPRECATED   :    $errorDangerLevel = EventType::NOTICE_PHP;   break;
-        default                  :    $errorDangerLevel = EventType::ERROR_PHP;    break;
-    }
-
-    $customEvent->set_event_type($errorDangerLevel);
-    $trace = debug_backtrace();
-    array_shift($trace);
-    $customEvent->handle($errno, $errstr, $errfile, $errline, $trace);
-
-    if ($errorDangerLevel == EventType::ERROR_PHP) {
-        die;
-    }
-}

@@ -26,6 +26,7 @@ class EventLogger extends GTBaseEntity {
     private $_f_device_id = null;
     private $_f_event_hash = null;
     private $_f_xdebug_message = null;
+    private $_f_variables_dump = null;
 
     protected $serviceManager;
 
@@ -65,6 +66,7 @@ class EventLogger extends GTBaseEntity {
     public function get_date_time()       { return $this->_f_date_time; }
     public function get_event_hash()      { return $this->_f_event_hash; }
     public function get_xdebug_message()  { return $this->_f_xdebug_message; }
+    public function get_variables_dump()   { return $this->_f_variables_dump; }
 
     public function set_event_logger_id($event_logger_id) { $this->_f_event_logger_id = $event_logger_id; return $this; }
     public function set_event_file($file)                 { $this->_f_event_file = $file; return $this; }
@@ -78,6 +80,9 @@ class EventLogger extends GTBaseEntity {
     public function set_date_time($date)                  { $this->_f_date_time = $date; return $this; }
     public function set_event_hash($event_hash)           { $this->_f_event_hash = $event_hash; return $this; }
     public function set_xdebug_message($xdebug_message)   { $this->_f_xdebug_message = $xdebug_message; return $this; }
+    public function set_variables_dump($variables_dump)   { $this->_f_variables_dump = $variables_dump; return $this; }
+
+
 
     function __construct($_serviceLocator = null) {
         parent::__construct($_serviceLocator);
@@ -109,6 +114,7 @@ class EventLogger extends GTBaseEntity {
     public function handle()
     {
         $args = func_get_arg(0);
+
         if ($args instanceof \Exception) {
             $this->_f_event_file = $args->getFile();
             $this->_f_message = $args->getMessage();
@@ -129,6 +135,7 @@ class EventLogger extends GTBaseEntity {
             $this->_f_event_file = $args[2];
             $this->_f_line = $args[3];
             $trace = $args[4]; // trace array
+            $variables_dump = $args[5]; // variables value near error
             $type = "Undefined";
 
             switch ($errno) {
@@ -181,6 +188,8 @@ class EventLogger extends GTBaseEntity {
             $this->_f_event_code = $type;
             $this->_f_message = "Backtrace from $this->_f_event_code $errstr at $this->_f_event_file $this->_f_line ";
             $this->_f_stack_trace = $this->stackTraceProcessing($trace, $this->_f_message);
+            $this->_f_variables_dump = $variables_dump;
+
         }
 
         $hasGTCurrentUser = ServiceLocatorFactory::getInstance()->getServiceLocator()->has('gt_current_user');
