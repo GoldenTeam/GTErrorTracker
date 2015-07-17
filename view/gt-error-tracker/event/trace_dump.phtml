@@ -1,3 +1,12 @@
-<?php $this->GTTxt("Trace Dump"); ?>:<br>
-<?php $this->item->show("trace_dump");?>
-
+<div class="accordion-group">
+    <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseThree">
+            Trace Dump
+        </a>
+    </div>
+    <div id="collapseThree" class="accordion-body collapse">
+        <div class="accordion-inner">
+            <?php $this->item->show("trace_dump"); ?>
+        </div>
+    </div>
+</div>

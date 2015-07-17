@@ -34,27 +34,10 @@ use GTErrorTracker\H\EventType;
 
 <div class="row">
 
-    <a href="#xdebug_message" class="toggle btn btn-muted">Show the xdebug message</a><br>
-    <div id="xdebug_message" class="hidden">
-        <?php echo $this->xdebug_message;?><br>
-    </div>
-
-    <a href="#variables_dump" class="toggle btn btn-muted">Show the variables dump</a><br>
-    <div id="variables_dump" class="hidden">
-        <?php echo $this->variables_dump;?><br>
-    </div>
-
-    <a href="#trace_dump" class="toggle btn btn-muted">Show the trace dump</a><br>
-    <div id="trace_dump" class="hidden">
-        <?php echo $this->trace_dump;?><br>
+    <div class="accordion" id="accordion2">
+        <?php echo $this->xdebug_message;?>
+        <?php echo $this->variables_dump;?>
+        <?php echo $this->trace_dump;?>
     </div>
 
 </div>
-
-
-
-
-
-
-
-
