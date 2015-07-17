@@ -27,6 +27,7 @@ class EventLogger extends GTBaseEntity {
     private $_f_event_hash = null;
     private $_f_xdebug_message = null;
     private $_f_variables_dump = null;
+    private $_f_trace_dump = null;
 
     protected $serviceManager;
 
@@ -67,6 +68,7 @@ class EventLogger extends GTBaseEntity {
     public function get_event_hash()      { return $this->_f_event_hash; }
     public function get_xdebug_message()  { return $this->_f_xdebug_message; }
     public function get_variables_dump()   { return $this->_f_variables_dump; }
+    public function get_trace_dump()   { return $this->_f_trace_dump; }
 
     public function set_event_logger_id($event_logger_id) { $this->_f_event_logger_id = $event_logger_id; return $this; }
     public function set_event_file($file)                 { $this->_f_event_file = $file; return $this; }
@@ -81,7 +83,7 @@ class EventLogger extends GTBaseEntity {
     public function set_event_hash($event_hash)           { $this->_f_event_hash = $event_hash; return $this; }
     public function set_xdebug_message($xdebug_message)   { $this->_f_xdebug_message = $xdebug_message; return $this; }
     public function set_variables_dump($variables_dump)   { $this->_f_variables_dump = $variables_dump; return $this; }
-
+    public function set_trace_dump($trace_dump)           { $this->_f_trace_dump = $trace_dump; return $this; }
 
 
     function __construct($_serviceLocator = null) {
@@ -111,6 +113,13 @@ class EventLogger extends GTBaseEntity {
         }
     }
 
+    public function grab_dump($var)
+    {
+        ob_start();
+        var_dump($var);
+        return ob_get_clean();
+    }
+
     public function handle()
     {
         $args = func_get_arg(0);
@@ -121,6 +130,7 @@ class EventLogger extends GTBaseEntity {
             $this->_f_line = $args->getLine();
             $this->_f_event_code = "Exception:" . $args->getCode();
             $this->_f_stack_trace = $this->stackTraceProcessing($args->getTrace(), $args->getMessage());
+            $this->_f_trace_dump = $this->grab_dump($args->getTrace());
 
             if (isset($args->xdebug_message)) {
                 $this->_f_xdebug_message = $args->xdebug_message;
@@ -135,7 +145,11 @@ class EventLogger extends GTBaseEntity {
             $this->_f_event_file = $args[2];
             $this->_f_line = $args[3];
             $trace = $args[4]; // trace array
-            $variables_dump = $args[5]; // variables value near error
+            $errcontext = $args[5]; // variables value near error
+
+            $variables_dump = $this->grab_dump($errcontext);
+            $trace_dump = $this->grab_dump($trace);
+
             $type = "Undefined";
 
             switch ($errno) {
@@ -189,6 +203,7 @@ class EventLogger extends GTBaseEntity {
             $this->_f_message = "Backtrace from $this->_f_event_code $errstr at $this->_f_event_file $this->_f_line ";
             $this->_f_stack_trace = $this->stackTraceProcessing($trace, $this->_f_message);
             $this->_f_variables_dump = $variables_dump;
+            $this->_f_trace_dump = $trace_dump;
 
         }
 

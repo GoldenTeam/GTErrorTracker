@@ -33,18 +33,10 @@ function process_exception_backtrace($exception) {
 }
 
 
-function grab_dump($var)
-{
-    ob_start();
-    var_dump($var);
-    return ob_get_clean();
-}
 
 function process_error_backtrace($errno, $errstr, $errfile, $errline, $errcontext) {
     $sm = ServiceLocatorFactory::getInstance()->getServiceLocator();
     $customEvent = new EventLogger($sm);
-
-    $variablesDump = grab_dump($errcontext);
 
 
     switch ($errno) {
@@ -69,7 +61,7 @@ function process_error_backtrace($errno, $errstr, $errfile, $errline, $errcontex
     $customEvent->set_event_type($errorDangerLevel);
     $trace = debug_backtrace();
     array_shift($trace);
-    $customEvent->handle($errno, $errstr, $errfile, $errline, $trace, $variablesDump);
+    $customEvent->handle($errno, $errstr, $errfile, $errline, $trace, $errcontext);
 
     if ($errorDangerLevel == EventType::ERROR_PHP) {
         die;

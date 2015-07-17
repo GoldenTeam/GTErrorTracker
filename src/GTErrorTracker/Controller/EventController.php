@@ -110,13 +110,23 @@ class EventController extends AbstractActionController {
             } else {
                 $variables_dump = "Dump of variables is not available";
             }
+
+            if ($customEvent->get_trace_dump()!=null) {
+                $trace_dump = $partial("gt-error-tracker/event/trace_dump.phtml",
+                    array("item" => $customEvent)
+                );
+            } else {
+                $trace_dump = "Dump of trace is not available";
+            }
+
                 $result = array(
                     "html" =>
                         $partial("gt-error-tracker/event/event_item.phtml",
                             array("item" => $customEvent,
                                 "pageNum" => $pageNum,
                                 "xdebug_message" =>  $xdebug_message,
-                                "variables_dump" => $variables_dump
+                                "variables_dump" => $variables_dump,
+                                "trace_dump" => $trace_dump
                             )
                         )
                 );
