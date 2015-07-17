@@ -5,14 +5,14 @@ use GTErrorTracker\H\EventType;
 
 <div class="row">
     <span data-page-info="<?php echo $pageNum;?>"></span>
-    <?php $this->GTTxt("Event Id"); ?>:<?php $this->item->show("event_logger_id");?><br>
-    <?php $this->GTTxt("Date"); ?>:<?php $this->item->show("DateTimeFormat")?><br>
-    <?php $this->GTTxt("Event Type"); ?>:<?php echo(EventType::getName($this->item->event_type));?><br>
-    <?php $this->GTTxt("File : Line"); ?><br>
+    <b><?php $this->GTTxt("Event Id"); ?>:</b><?php $this->item->show("event_logger_id");?><br>
+    <b><?php $this->GTTxt("Date"); ?>:</b><?php $this->item->show("DateTimeFormat")?><br>
+    <b><?php $this->GTTxt("Event Type"); ?>:</b><?php echo(EventType::getName($this->item->event_type));?><br>
+    <b><?php $this->GTTxt("File:Line"); ?></b><br>
     <?php $this->item->show("event_file");?>:<?php $this->item->show("line");?><br>
-    <?php $this->GTTxt("Event Message"); ?>:<br>
+    <b><?php $this->GTTxt("Event Message"); ?>:</b><br>
     <?php $this->item->show("message");?><br>
-    <?php $this->GTTxt("User");?>:
+    <b><?php $this->GTTxt("User");?>:</b>
 
     <?php $user = $this->item->get_user();?>
     <?php if($user instanceof \GTErrorTracker\Model\GTUserInterface){?>
@@ -23,7 +23,7 @@ use GTErrorTracker\H\EventType;
         $this->GTTxt("No User available");
     }?><br>
 
-    <?php $this->GTTxt("Device Id");?>:<?php $this->item->show("device_id");?>
+    <b><?php $this->GTTxt("Device Id");?>:</b><?php $this->item->show("device_id");?>
 
 </div>
 
