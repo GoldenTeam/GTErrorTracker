@@ -100,7 +100,7 @@ class EventController extends AbstractActionController {
                     array("item" => $customEvent)
                 );
             } else {
-                $xdebug_message = "xdebug message is not available";
+                $xdebug_message = "";
 
             }
             if ($customEvent->get_variables_dump()!=null) {
@@ -108,7 +108,7 @@ class EventController extends AbstractActionController {
                     array("item" => $customEvent)
                 );
             } else {
-                $variables_dump = "Dump of variables is not available";
+                $variables_dump = "";
             }
 
             if ($customEvent->get_trace_dump()!=null) {
@@ -116,7 +116,7 @@ class EventController extends AbstractActionController {
                     array("item" => $customEvent)
                 );
             } else {
-                $trace_dump = "Dump of trace is not available";
+                $trace_dump = "";
             }
 
                 $result = array(
