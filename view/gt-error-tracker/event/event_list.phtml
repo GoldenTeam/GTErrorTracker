@@ -29,8 +29,9 @@ use GTErrorTracker\H\EventType;
             <tr class="<?php $item->show("CssClasses"); ?>"
                 data-event-id="<?php $item->show("event_logger_id")?>"
                 >
-                <td>
-                    <?php $item->show("event_logger_id")?>
+                <td><a class="btn btn-default" href="/gtevent/show/event_id/<?php $item->show("event_logger_id")?>">
+                        <?php $item->show("event_logger_id")?>
+                    </a>
                 </td>
                 <td>
                     <?php $item->show("DateTimeFormat")?>

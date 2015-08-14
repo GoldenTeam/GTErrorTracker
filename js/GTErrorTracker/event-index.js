@@ -42,7 +42,7 @@ var eventData;
             });
         });
 
-        $(".event_list .list table tr td:not(:has(button))").click(function() {
+        $(".event_list .list table tr td:not(:has(button,a))").click(function() {
             var eventId = $(this).parent().attr("data-event-id");
 
             window.location = "/gtevent/show/event_id/" + eventId;
