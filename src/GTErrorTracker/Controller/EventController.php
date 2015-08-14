@@ -55,7 +55,7 @@ class EventController extends AbstractActionController {
         $sm = $this->getServiceLocator();
         $formSearchEvent = new GTEventSearchForm($sm);
         $eventData = $this->params()->fromPost('GTEventData', '###');
-        if ($eventData!="###") {
+        if ($eventData!="###" && $eventData!="") {
             $filter['eventData'] = $eventData;
             $session->eventData = $filter;
             $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
