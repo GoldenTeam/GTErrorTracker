@@ -7,6 +7,7 @@
  */
 namespace GTErrorTracker\Controller;
 
+use GTErrorTracker\Form\GTEventSearchForm;
 use GTErrorTracker\H;
 use GTErrorTracker\H\Env;
 use GTErrorTracker\Model\EventLogger;
@@ -48,6 +49,14 @@ class EventController extends AbstractActionController {
 
         $config = $this->getServiceLocator()->get('config');
         $customConfig = $config["GTErrorTracker"];
+        $sm = $this->getServiceLocator();
+        $formSearchEvent = new GTEventSearchForm($sm);
+        $eventData = $this->params()->fromPost('GTEventData', '###');
+        if ($eventData!="###") {
+            $filter['eventData'] = $eventData;
+            $session->eventData = $filter;
+            $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
+        }
 
         $pageNum = $this->GTParam('page', 0);
         $session->page = $pageNum;
@@ -56,10 +65,11 @@ class EventController extends AbstractActionController {
         $pager = new Paginator($EG);
         $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
+        $searchHtmlForm =  $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
         $result = array(
             "pagerHtml" => $pager->count() > 0 ?
-                $partial("gt-error-tracker/event/event_list.phtml", array("pager" => $pager, "count" => $EG->count())) :
-                $partial("gt-error-tracker/emtpy_list.phtml", array('message' => 'No events found so far')),
+                $partial("gt-error-tracker/event/event_list.phtml", array("pager" => $pager, "count" => $EG->count(), "formSearchHtml" => $searchHtmlForm)) :
+                $partial("gt-error-tracker/emtpy_list.phtml", array('message' => 'No events found so far', "formSearchHtml" => $searchHtmlForm)),
             "page" => $pageNum,
 
         );

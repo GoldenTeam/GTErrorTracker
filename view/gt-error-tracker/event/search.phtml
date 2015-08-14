@@ -1,0 +1,21 @@
+<div class="row">
+    <?php echo $this->form()->openTag($this->formSearchEvent); ?>
+
+    <div class="row">
+        <div class="span">
+            <div class="control-group">
+                <div class="controls">
+                    <?php echo $this->formLabel($this->formSearchEvent->get('GTEventData')); ?>
+                    <?php echo $this->formInput($this->formSearchEvent->get('GTEventData')); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag(); ?>
+    <input
+        type="button"
+        name="submit"
+        class="btn btn-default"
+        id="GTsubmitSearchButton"
+        value="Search">
+</div>

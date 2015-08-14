@@ -1,7 +1,7 @@
 <?php
 
 use GTErrorTracker\H\EventType;
-?>
+4?>
 <div class="row">
     <h5 class="span total"><?php $this->GTTxt("Total"); ?></h5>
     <h5 class="span1 total"><?php $this->GTHtml("count"); ?></h5>
@@ -9,6 +9,7 @@ use GTErrorTracker\H\EventType;
         <?php echo $this->paginationControl($this->pager, 'Sliding', 'gt-error-tracker/pagination/GTdigg.phtml', array("route" => "gtevent", "action" => "index")); ?>
     </div>
 </div>
+<?php $this->GTHtml("formSearchHtml"); ?>
 <div class="row">
     <table class="table table-hover">
         <thead>

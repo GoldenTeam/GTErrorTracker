@@ -171,21 +171,43 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
      */
     public function count() {
         if ($this->_count <= 0) {
-            $where = new \Zend\Db\Sql\Where();
+            if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
 
-            $sql = new Sql($this->adapter);
-            $select = $sql->select();
+                $where = new \Zend\Db\Sql\Where();
+                $where->expression("CONCAT_WS(' ', event_file, event_code, event_hash) LIKE ?", "%" . $this->_options["eventData"] . "%");
+                $sql = new Sql($this->adapter);
+                $select = $sql->select();
 
-            $select
-                ->from($this->table)
-                ->where($where)
-                ->columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(*)')));
+                $select
+                    ->from($this->table)
+                    ->where($where)
+                    ->columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(*)')));
 
-            $sqlTxt = $sql->getSqlStringForSqlObject($select);
-            $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
-            foreach($resultSet as $row) {
-                $this->_count = intval($row->count);
-                break;
+                $sqlTxt = $sql->getSqlStringForSqlObject($select);
+                $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
+                foreach ($resultSet as $row) {
+                    $this->_count = intval($row->count);
+                    break;
+                }
+
+
+            } else {
+                $where = new \Zend\Db\Sql\Where();
+
+                $sql = new Sql($this->adapter);
+                $select = $sql->select();
+
+                $select
+                    ->from($this->table)
+                    ->where($where)
+                    ->columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(*)')));
+
+                $sqlTxt = $sql->getSqlStringForSqlObject($select);
+                $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
+                foreach ($resultSet as $row) {
+                    $this->_count = intval($row->count);
+                    break;
+                }
             }
         }
         return $this->_count;
@@ -205,6 +227,11 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $select->where($where);
             $select->offset($offset)->limit($limit);
             $select->order('date_time DESC');
+        if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
+            $where = new Where();
+            $where->expression("CONCAT_WS(' ', event_file, event_code, event_hash) LIKE ?", "%" . $this->_options["eventData"] . "%");
+            $select->where($where);
+        }
         });
         if ($items->count() > 0) {
             $this->result("", false);
@@ -220,6 +247,11 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $this->result("", false);
         }
         return $customEvent;
+    }
+
+    public function setOptions($filter)
+    {
+        $this->_options = $filter;
     }
 }
 ?>
