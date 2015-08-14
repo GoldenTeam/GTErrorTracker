@@ -1,4 +1,5 @@
 var eventList;
+var eventData;
 
 (new (function EventList() {
 
@@ -48,12 +49,40 @@ var eventList;
 
             return false;
         });
+
+        $('#GTEventSearch').on('keyup keypress', function(e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $("#GTsubmitSearchButton").click(
+            function () {
+                var form=$("#GTEventSearch");
+                eventData=$("[name='GTEventData']").val();
+                GTm.post("/gtevent",
+                    form.serialize(),
+                    function(data) {
+                        if (data.error) {
+                            $("#notification").html(data.notification);
+                        } else {
+                            $('.event_list .list').html(data.pagerHtml);
+                            _page = data.page;
+                            _this.initPager();
+                        }
+                    });
+            }
+        );
+
     }
 
     this.search = function(page) {
         page = (page === undefined ? _page : page);
         var data = {
-            "page": page
+            "page": page,
+            "GTEventData": eventData
         };
 
         GTm.post("/gtevent", data, function(data) {
