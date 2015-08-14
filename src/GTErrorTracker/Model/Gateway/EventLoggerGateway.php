@@ -229,7 +229,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $select->order('date_time DESC');
         if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
             $where = new Where();
-            $where->expression("CONCAT_WS(' ', event_file, event_code, event_hash) LIKE ?", "%" . $this->_options["eventData"] . "%");
+            $where->expression("CONCAT_WS(' ', event_file, event_code, event_hash, line) LIKE ?", "%" . $this->_options["eventData"] . "%");
             $select->where($where);
         }
         });
