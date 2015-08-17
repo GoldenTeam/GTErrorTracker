@@ -8,6 +8,7 @@ use GTErrorTracker\H\EventType;
     <b><?php $this->GTTxt("Event Id"); ?>:</b><?php $this->item->show("event_logger_id");?><br>
     <b><?php $this->GTTxt("Date"); ?>:</b><?php $this->item->show("DateTimeFormat")?><br>
     <b><?php $this->GTTxt("Event Type"); ?>:</b><?php echo(EventType::getName($this->item->event_type));?><br>
+    <b><?php $this->GTTxt("Event Hash"); ?>:</b><?php $this->item->show("event_hash")?><br>
     <b><?php $this->GTTxt("File:Line"); ?></b><br>
     <?php $this->item->show("event_file");?>:<?php $this->item->show("line");?><br>
     <b><?php $this->GTTxt("Event Message"); ?>:</b><br>
