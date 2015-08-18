@@ -19,6 +19,7 @@ use Zend\Session\Container;
 class EventController extends AbstractActionController {
 
     public function deleteAction() {
+        $session = new Container('user');
         $pageNum = $this->GTParam('page', 0);
         $event_logger_id = $this->GTParam('event_logger_id', 0);
         $eventLogger = $this->GTGateway("EventLoggerGateway")->findByEventLoggerId($event_logger_id);
@@ -34,6 +35,12 @@ class EventController extends AbstractActionController {
                 $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
                 $sm = $this->getServiceLocator();
                 $formSearchEvent = new GTEventSearchForm($sm);
+                $eventData = $this->params()->fromPost('GTEventData', '###');
+                if ($eventData!="###" && $eventData!="") {
+                    $filter['eventData'] = $eventData;
+                    $session->eventData = $filter;
+                    $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
+                }
                 $searchHtmlForm =  $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
                 $result = array(
                     "pagerHtml" => $pager->count() > 0 ?
