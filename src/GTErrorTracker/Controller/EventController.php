@@ -28,19 +28,18 @@ class EventController extends AbstractActionController {
             $eventLogger->delete();
             $result = H\GTResult::to();
             if (!H\GTResult::isError()) {
-
-                $EG = $this->GTGateway("EventLoggerGateway");
-                $pager = new Paginator($EG);
-                $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
-                $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
-                $sm = $this->getServiceLocator();
-                $formSearchEvent = new GTEventSearchForm($sm);
                 $eventData = $this->params()->fromPost('GTEventData', '###');
                 if ($eventData!="###" && $eventData!="") {
                     $filter['eventData'] = $eventData;
                     $session->eventData = $filter;
                     $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
                 }
+                $EG = $this->GTGateway("EventLoggerGateway");
+                $pager = new Paginator($EG);
+                $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
+                $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
+                $sm = $this->getServiceLocator();
+                $formSearchEvent = new GTEventSearchForm($sm);
                 $searchHtmlForm =  $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
                 $result = array(
                     "pagerHtml" => $pager->count() > 0 ?
