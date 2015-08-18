@@ -29,7 +29,8 @@ var eventData;
                         var data =
                             {
                                 event_logger_id:event_id,
-                                page:_page
+                                page:_page,
+                                "GTEventData": eventData
                             };
 
                         GTm.post("/gtevent/delete", data, function(data) {
