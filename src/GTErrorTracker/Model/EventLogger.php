@@ -245,44 +245,108 @@ class EventLogger extends GTBaseEntity {
     }
 
     private function echoIfDevMode($event_logger_id) {
+        $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
+        $headers = $serviceManager->get('request')->getHeaders();
+        $headerSignKey = $headers->get('Signkey');
+        $headerToken = $headers->get('Token');
         if (isset($_SERVER['APPLICATION_ENV']) && $_SERVER['APPLICATION_ENV'] == 'development') {
-
-            echo 'Event Id:' . $event_logger_id . '<br>';
-            //echo 'Date:' . $this->getDateTimeFormat($this->_f_date_time) . '<br>';
-            echo H\EventType::getName($this->_f_event_type) . '<br>';
-            echo $this->_f_event_code . '<br>';
-            echo $this->_f_event_file . ':' . $this->_f_line . '<br>';
-            echo $this->_f_message . '<br>';
-            echo $this->_f_stack_trace . '<br>';
-            echo 'User Id:' . $this->_f_user_id . '<br>';
-            echo 'Device Id:' . $this->_f_device_id . '<br>';
-
+            $html = 'Event Id:' . $event_logger_id . '<br>';
+            $html .= H\EventType::getName($this->_f_event_type) . '<br>';
+            $html .= $this->_f_event_code . '<br>';
+            $html .= $this->_f_event_file . ':' . $this->_f_line . '<br>';
+            $html .= $this->_f_message . '<br>';
+            $html .= $this->_f_stack_trace . '<br>';
+            $html .= 'User Id:' . $this->_f_user_id . '<br>';
+            $html .= 'Device Id:' . $this->_f_device_id . '<br>';
+            if (!$headerSignKey && !$headerToken) {
+                echo $html;
+            } else {
+                $result = array(
+                    'error' => true,
+                    'result' => array(
+                        'stack_trace' => $html,
+                        'exception_message' => $this->_f_message,
+                        'datetime' => $this->_f_date_time,
+                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                        'code' => 3
+                    )
+                );
+                $json = json_encode($result);
+                echo $json;
+            }
         } else {
             if ($this->_f_event_type == EventType::ERROR_PHP ||
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
-
-                echo "<h1>Some Unexpected Error occurred. Please contact to administrator.</h1>";
+                if (!$headerSignKey && !$headerToken) {
+                    echo "<h1>Some Unexpected Error occurred. Please contact to administrator.</h1>";
+                } else {
+                    $result = array(
+                        'error' => true,
+                        'result' => array(
+                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'code' => 3
+                        )
+                    );
+                    $json = json_encode($result);
+                    echo $json;
+                }
                 die;
             }
         }
     }
 
     private function redirectIfDevMode($event_logger_id) {
+        $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
+        $headers = $serviceManager->get('request')->getHeaders();
+        $headerSignKey = $headers->get('Signkey');
+        $headerToken = $headers->get('Token');
         if (isset($_SERVER['APPLICATION_ENV']) && $_SERVER['APPLICATION_ENV'] == 'development') {
-            $redirect ="http://" . ($_SERVER['SERVER_NAME']) .
-                "/gtevent/show/event_id/" . $event_logger_id;
-            echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+            if (!$headerSignKey && !$headerToken) {
+                $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/show/event_id/" . $event_logger_id;
+                echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+            } else {
+                $html = 'Event Id:' . $event_logger_id . '<br>';
+                $html .= H\EventType::getName($this->_f_event_type) . '<br>';
+                $html .= $this->_f_event_code . '<br>';
+                $html .= $this->_f_event_file . ':' . $this->_f_line . '<br>';
+                $html .= $this->_f_message . '<br>';
+                $html .= $this->_f_stack_trace . '<br>';
+                $html .= 'User Id:' . $this->_f_user_id . '<br>';
+                $html .= 'Device Id:' . $this->_f_device_id . '<br>';
+                $result = array(
+                    'error' => true,
+                    'result' => array(
+                        'stack_trace' => $html,
+                        'exception_message' => $this->_f_message,
+                        'datetime' => $this->_f_date_time,
+                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                        'code' => 3,
+                    )
+                );
+                $json = json_encode($result);
+                echo $json;
+            }
         } else {
-
             if ($this->_f_event_type == EventType::ERROR_PHP ||
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
-                $redirect ="http://" . ($_SERVER['SERVER_NAME']) .
-                    "/gtevent/error";
-                echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+                if (!$headerSignKey && !$headerToken) {
+                    $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
+                    echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+                } else {
+                    $result = array(
+                        'error' => true,
+                        'result' => array(
+                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'code' => 3
+                        )
+                    );
+                    $json = json_encode($result);
+                    echo $json;
+                }
                 die;
             }
         }
