@@ -271,10 +271,12 @@ class EventLogger extends GTBaseEntity {
 
     private function echoIfDevMode($event_logger_id) {
         $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
+        $config = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config');
+        $customConfig = $config["GTErrorTracker"];
         $headers = $serviceManager->get('request')->getHeaders();
         $headerSignKey = $headers->get('Signkey');
         $headerToken = $headers->get('Token');
-        if (isset($_SERVER['APPLICATION_ENV']) && $_SERVER['APPLICATION_ENV'] == 'development') {
+        if ($customConfig['developmentMode']) {
             $html = 'Event Id:' . $event_logger_id . '<br>';
             $html .= H\EventType::getName($this->_f_event_type) . '<br>';
             $html .= $this->_f_event_code . '<br>';
@@ -341,10 +343,12 @@ class EventLogger extends GTBaseEntity {
 
     private function redirectIfDevMode($event_logger_id) {
         $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
+        $config = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config');
+        $customConfig = $config["GTErrorTracker"];
         $headers = $serviceManager->get('request')->getHeaders();
         $headerSignKey = $headers->get('Signkey');
         $headerToken = $headers->get('Token');
-        if (isset($_SERVER['APPLICATION_ENV']) && $_SERVER['APPLICATION_ENV'] == 'development') {
+        if ($customConfig['developmentMode']) {
             if (!$headerSignKey && !$headerToken) {
                 $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/show/event_id/" . $event_logger_id;
                 echo "<a href='" . $redirect . "'>$redirect</a>";
