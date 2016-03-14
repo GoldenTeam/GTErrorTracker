@@ -74,7 +74,7 @@ class EventController extends AbstractActionController {
         $pager = new Paginator($EG);
         $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
-        $searchHtmlForm =  $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
+        $searchHtmlForm = $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
         $result = array(
             "pagerHtml" => $pager->count() > 0 ?
                 $partial("gt-error-tracker/event/event_list.phtml", array("pager" => $pager, "count" => $EG->count(), "formSearchHtml" => $searchHtmlForm)) :

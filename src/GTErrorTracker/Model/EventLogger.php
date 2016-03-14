@@ -6,6 +6,9 @@ use GTErrorTracker\H;
 use GTErrorTracker\H\EventType;
 use GTErrorTracker\H\ServiceLocatorFactory;
 
+use Zend\Db\Adapter\Driver\Pdo\Result;
+use Zend\Http\PhpEnvironment\RemoteAddress;
+use Zend\Mvc\Application;
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\PhpRenderer;
@@ -28,6 +31,7 @@ class EventLogger extends GTBaseEntity {
     private $_f_xdebug_message = null;
     private $_f_variables_dump = null;
     private $_f_trace_dump = null;
+    private $_f_ip_address = null;
 
     protected $serviceManager;
 
@@ -69,6 +73,7 @@ class EventLogger extends GTBaseEntity {
     public function get_xdebug_message()  { return $this->_f_xdebug_message; }
     public function get_variables_dump()   { return $this->_f_variables_dump; }
     public function get_trace_dump()   { return $this->_f_trace_dump; }
+    public function get_ip_address()   { return $this->_f_ip_address; }
 
     public function set_event_logger_id($event_logger_id) { $this->_f_event_logger_id = $event_logger_id; return $this; }
     public function set_event_file($file)                 { $this->_f_event_file = $file; return $this; }
@@ -84,6 +89,7 @@ class EventLogger extends GTBaseEntity {
     public function set_xdebug_message($xdebug_message)   { $this->_f_xdebug_message = $xdebug_message; return $this; }
     public function set_variables_dump($variables_dump)   { $this->_f_variables_dump = $variables_dump; return $this; }
     public function set_trace_dump($trace_dump)           { $this->_f_trace_dump = $trace_dump; return $this; }
+    public function set_ip_address($ip_address)           { $this->_f_ip_address = $ip_address; return $this; }
 
 
     function __construct($_serviceLocator = null) {
@@ -145,6 +151,7 @@ class EventLogger extends GTBaseEntity {
             $this->_f_line = $args[3];
             $trace = $args[4]; // trace array
             $errcontext = $args[5]; // variables value near error
+            $route = isset($args[6]) ? $args[6] : null; //wrong route on 404 page
 
             $type = "Undefined";
 
@@ -194,9 +201,27 @@ class EventLogger extends GTBaseEntity {
                 case E_USER_DEPRECATED  :
                     $type = "E_USER_DEPRECATED";
                     break;
+                case Application::ERROR_CONTROLLER_NOT_FOUND:
+                    $type = "ERROR_CONTROLLER_NOT_FOUND";
+                    break;
+                case Application::ERROR_CONTROLLER_INVALID:
+                    $type = "ERROR_CONTROLLER_INVALID";
+                    break;
+                case Application::ERROR_ROUTER_NO_MATCH:
+                    $type = "ERROR_ROUTER_NO_MATCH";
+                    break;
+                case Application::ERROR_CONTROLLER_CANNOT_DISPATCH:
+                    $type = "ERROR_CONTROLLER_CANNOT_DISPATCH";
+                    break;
             }
             $this->_f_event_code = $type;
-            $this->_f_message = "Backtrace from $this->_f_event_code $errstr at $this->_f_event_file $this->_f_line ";
+            $remote = new RemoteAddress();
+            $this->_f_ip_address = $remote->getIpAddress();
+            if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
+                $this->_f_message = "$errstr at route: $route";
+            } else {
+                $this->_f_message = "Backtrace from $this->_f_event_code $errstr at $this->_f_event_file $this->_f_line ";
+            }
             $this->_f_stack_trace = $this->stackTraceProcessing($trace, $this->_f_message);
 
         }
@@ -267,7 +292,7 @@ class EventLogger extends GTBaseEntity {
                         'stack_trace' => $html,
                         'exception_message' => $this->_f_message,
                         'datetime' => $this->_f_date_time,
-                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id, $this->_f_message",
                         'code' => 3
                     )
                 );
@@ -294,6 +319,23 @@ class EventLogger extends GTBaseEntity {
                 }
                 die;
             }
+            if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
+                if (!$headerSignKey && !$headerToken) {
+                    $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
+                    echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+                } else {
+                    $result = array(
+                        'error' => true,
+                        'result' => array(
+                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'code' => 3
+                        )
+                    );
+                    $json = json_encode($result);
+                    echo $json;
+                    die;
+                }
+            }
         }
     }
 
@@ -305,7 +347,7 @@ class EventLogger extends GTBaseEntity {
         if (isset($_SERVER['APPLICATION_ENV']) && $_SERVER['APPLICATION_ENV'] == 'development') {
             if (!$headerSignKey && !$headerToken) {
                 $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/show/event_id/" . $event_logger_id;
-                echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+                echo "<a href='" . $redirect . "'>$redirect</a>";
             } else {
                 $html = 'Event Id:' . $event_logger_id . '<br>';
                 $html .= H\EventType::getName($this->_f_event_type) . '<br>';
@@ -321,7 +363,7 @@ class EventLogger extends GTBaseEntity {
                         'stack_trace' => $html,
                         'exception_message' => $this->_f_message,
                         'datetime' => $this->_f_date_time,
-                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id, $this->_f_message",
                         'code' => 3,
                     )
                 );
@@ -348,6 +390,22 @@ class EventLogger extends GTBaseEntity {
                     echo $json;
                 }
                 die;
+            }
+            if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
+                if (!$headerSignKey && !$headerToken) {
+                    $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
+                    echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+                } else {
+                    $result = array(
+                        'error' => true,
+                        'result' => array(
+                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'code' => 3
+                        )
+                    );
+                    $json = json_encode($result);
+                    echo $json;
+                }
             }
         }
     }

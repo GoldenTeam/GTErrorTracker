@@ -16,6 +16,7 @@ class EventType {
     const EXCEPTION_PHP = 4;
     const WARNING_PHP = 5;
     const NOTICE_PHP = 6;
+    const ROUTER_NOT_MATCH = 7;
 
     static public function toArray() {
         return array(
@@ -60,6 +61,13 @@ class EventType {
                 "descriptions" => "EXCEPTION_PHP",
                 "cssClass" => "warning",
                 ),
+            self::ROUTER_NOT_MATCH => array(
+                "id" => self::ROUTER_NOT_MATCH,
+                "name" => "ROUTER_NOT_MATCH",
+                "descriptions" => "ROUTER_NOT_MATCH",
+                    "cssClass" => "info",
+            ),
+
             );
     }
 
