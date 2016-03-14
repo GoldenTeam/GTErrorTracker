@@ -18,9 +18,33 @@ use Zend\Session\Container;
 
 class EventController extends AbstractActionController {
 
-    public function deleteAction() {
+    private function getEvents($eventLoggerGateway) {
         $session = new Container('user');
-        $pageNum = $this->GTParam('page', 0);
+        $pageNum = $session->page;
+        $eventData = $session->eventData;
+        if ($eventData != "###" && $eventData != "") {
+            $filter['eventData'] = $eventData;
+            $session->eventData = $filter;
+            $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
+        }
+        $pager = new Paginator($eventLoggerGateway);
+        $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
+        $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
+        $sm = $this->getServiceLocator();
+        $formSearchEvent = new GTEventSearchForm($sm);
+        $searchHtmlForm = $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
+        $result = array(
+            "pagerHtml" => $pager->count() > 0 ?
+                $partial("gt-error-tracker/event/event_list.phtml",
+                    array("pager" => $pager, "count" => $eventLoggerGateway->count(), "formSearchHtml" => $searchHtmlForm)) :
+                $partial("gt-error-tracker/empty_list.phtml",
+                    array('message' => 'No events found so far', "formSearchHtml" => $searchHtmlForm)),
+            "page" => $pageNum,
+        );
+        return $result;
+    }
+
+    public function deleteAction() {
         $event_logger_id = $this->GTParam('event_logger_id', 0);
         $eventLogger = $this->GTGateway("EventLoggerGateway")->findByEventLoggerId($event_logger_id);
         $result = H\GTResult::to();
@@ -28,26 +52,7 @@ class EventController extends AbstractActionController {
             $eventLogger->delete();
             $result = H\GTResult::to();
             if (!H\GTResult::isError()) {
-                $eventData = $this->params()->fromPost('GTEventData', '###');
-                if ($eventData!="###" && $eventData!="") {
-                    $filter['eventData'] = $eventData;
-                    $session->eventData = $filter;
-                    $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
-                }
-                $EG = $this->GTGateway("EventLoggerGateway");
-                $pager = new Paginator($EG);
-                $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
-                $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
-                $sm = $this->getServiceLocator();
-                $formSearchEvent = new GTEventSearchForm($sm);
-                $searchHtmlForm =  $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
-                $result = array(
-                    "pagerHtml" => $pager->count() > 0 ?
-                        $partial("gt-error-tracker/event/event_list.phtml", array("pager" => $pager, "count" => $EG->count(), "formSearchHtml" => $searchHtmlForm)) :
-                        $partial("gt-error-tracker/emtpy_list.phtml", array('message' => 'No events found so far', "formSearchHtml" => $searchHtmlForm)),
-                    "page" => $pageNum,
-
-                );
+                $result = $this->getEvents($eventLogger);
             }
         }
         return $this->GTResult($result);
@@ -55,33 +60,12 @@ class EventController extends AbstractActionController {
 
     public function indexAction() {
         $session = new Container('user');
-
         $config = $this->getServiceLocator()->get('config');
         $customConfig = $config["GTErrorTracker"];
-        $sm = $this->getServiceLocator();
-        $formSearchEvent = new GTEventSearchForm($sm);
-        $eventData = $this->params()->fromPost('GTEventData', '###');
-        if ($eventData!="###" && $eventData!="") {
-            $filter['eventData'] = $eventData;
-            $session->eventData = $filter;
-            $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
-        }
-
         $pageNum = $this->GTParam('page', 0);
         $session->page = $pageNum;
-
         $EG = $this->GTGateway("EventLoggerGateway");
-        $pager = new Paginator($EG);
-        $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
-        $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
-        $searchHtmlForm = $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
-        $result = array(
-            "pagerHtml" => $pager->count() > 0 ?
-                $partial("gt-error-tracker/event/event_list.phtml", array("pager" => $pager, "count" => $EG->count(), "formSearchHtml" => $searchHtmlForm)) :
-                $partial("gt-error-tracker/emtpy_list.phtml", array('message' => 'No events found so far', "formSearchHtml" => $searchHtmlForm)),
-            "page" => $pageNum,
-
-        );
+        $result = $this->getEvents($EG);
         if (!$this->getRequest()->isPost()) {
             $this->GTHead("css", $customConfig['LoadCss']['indexAction']);
             $this->GTHead("js",  $customConfig['LoadJs']['indexAction']);
@@ -93,7 +77,6 @@ class EventController extends AbstractActionController {
     public function errorAction() {
         $config = $this->getServiceLocator()->get('config');
         $customConfig = $config["GTErrorTracker"];
-
         $result = array("message" => "Some Error Occurred. Please Contact to the Administrator");
         if (!$this->getRequest()->isPost()) {
             $this->GTHead("css", $customConfig['LoadCss']['indexAction']);
@@ -114,45 +97,29 @@ class EventController extends AbstractActionController {
         $customEvent = $this->GTGateway("EventLoggerGateway")->findByEventId($event_logger_id);
         $result = H\GTResult::to();
         if ($customEvent instanceof EventLogger) {
-            if ($customEvent->get_xdebug_message()!=null) {
-                $xdebug_message = $partial("gt-error-tracker/event/xdebug_message.phtml",
-                    array("item" => $customEvent)
-                );
-            } else {
-                $xdebug_message = "";
+            $xdebug_message = $customEvent->get_xdebug_message() ?
+                $partial("gt-error-tracker/event/xdebug_message.phtml", array("item" => $customEvent)) : "";
 
-            }
-            if ($customEvent->get_variables_dump()!=null) {
-                $variables_dump = $partial("gt-error-tracker/event/variables_dump.phtml",
-                    array("item" => $customEvent)
-                );
-            } else {
-                $variables_dump = "";
-            }
+            $variables_dump = $customEvent->get_variables_dump() ?
+                $partial("gt-error-tracker/event/variables_dump.phtml", array("item" => $customEvent)) : "";
 
-            if ($customEvent->get_trace_dump()!=null) {
-                $trace_dump = $partial("gt-error-tracker/event/trace_dump.phtml",
-                    array("item" => $customEvent)
-                );
-            } else {
-                $trace_dump = "";
-            }
+            $trace_dump = $customEvent->get_trace_dump() ?
+                $partial("gt-error-tracker/event/trace_dump.phtml", array("item" => $customEvent)) : "";
 
-                $result = array(
-                    "html" =>
-                        $partial("gt-error-tracker/event/event_item.phtml",
-                            array("item" => $customEvent,
-                                "pageNum" => $pageNum,
-                                "xdebug_message" =>  $xdebug_message,
-                                "variables_dump" => $variables_dump,
-                                "trace_dump" => $trace_dump
-                            )
+            $result = array(
+                "html" =>
+                    $partial("gt-error-tracker/event/event_item.phtml",
+                        array("item" => $customEvent,
+                            "pageNum" => $pageNum,
+                            "xdebug_message" =>  $xdebug_message,
+                            "variables_dump" => $variables_dump,
+                            "trace_dump" => $trace_dump
                         )
+                    )
                 );
-
         } else {
             $result = array(
-                "html" => $partial("gt-error-tracker/emtpy_list.phtml",
+                "html" => $partial("gt-error-tracker/empty_list.phtml",
                     array('message' => $result['message'])));
         }
         if (!$this->getRequest()->isPost()) {
