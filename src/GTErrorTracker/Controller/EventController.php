@@ -21,10 +21,7 @@ class EventController extends AbstractActionController {
     private function getEvents($eventLoggerGateway) {
         $session = new Container('user');
         $pageNum = $session->page;
-        $eventData = $session->eventData;
-        if ($eventData != "###" && $eventData != "") {
-            $filter['eventData'] = $eventData;
-            $session->eventData = $filter;
+        if ($session->eventData != "###" && $session->eventData != "") {
             $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
         }
         $pager = new Paginator($eventLoggerGateway);
@@ -64,6 +61,11 @@ class EventController extends AbstractActionController {
         $customConfig = $config["GTErrorTracker"];
         $pageNum = $this->GTParam('page', 0);
         $session->page = $pageNum;
+        $eventData = $this->params()->fromPost('GTEventData', '###');
+        if ($eventData != "###" && $eventData != "") {
+            $filter['eventData'] = $eventData;
+            $session->eventData = $filter;
+        }
         $EG = $this->GTGateway("EventLoggerGateway");
         $result = $this->getEvents($EG);
         if (!$this->getRequest()->isPost()) {
