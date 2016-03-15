@@ -21,13 +21,15 @@ class EventController extends AbstractActionController {
     private function getEvents($eventLoggerGateway) {
         $session = new Container('user');
         $pageNum = $session->page;
-        $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
+        $filter = $session->eventData;
+        $this->GTGateway('EventLoggerGateway')->setOptions($filter);
         $pager = new Paginator($eventLoggerGateway);
         $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
         $sm = $this->getServiceLocator();
         $formSearchEvent = new GTEventSearchForm($sm);
-        $searchHtmlForm = $partial("gt-error-tracker/event/search.phtml", array("formSearchEvent" => $formSearchEvent));
+        $searchHtmlForm = $partial("gt-error-tracker/event/search.phtml",
+            array("formSearchEvent" => $formSearchEvent, "searchValue" => $filter['eventData']));
         $result = array(
             "pagerHtml" => $pager->count() > 0 ?
                 $partial("gt-error-tracker/event/event_list.phtml",

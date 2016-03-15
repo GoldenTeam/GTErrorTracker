@@ -6,7 +6,7 @@
             <div class="control-group">
                 <div class="controls">
                     <?php echo $this->formLabel($this->formSearchEvent->get('GTEventData')); ?>
-                    <?php echo $this->formInput($this->formSearchEvent->get('GTEventData')); ?>
+                    <?php echo $this->formInput($this->formSearchEvent->get('GTEventData')->setValue($searchValue)); ?>
                 </div>
             </div>
         </div>
