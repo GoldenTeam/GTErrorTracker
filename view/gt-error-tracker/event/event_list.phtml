@@ -16,6 +16,7 @@ use GTErrorTracker\H\EventType;
         <tr>
             <th><?php $this->GTTxt("Event id"); ?></th>
             <th><?php $this->GTTxt("Date"); ?></th>
+            <th><?php $this->GTTxt("IP Address"); ?></th>
             <th><?php $this->GTTxt("Event Code"); ?></th>
             <th><?php $this->GTTxt("Event Handler"); ?></th>
             <th><?php $this->GTTxt("File"); ?>:<?php $this->GTTxt("Line"); ?></th>
@@ -35,6 +36,9 @@ use GTErrorTracker\H\EventType;
                 </td>
                 <td>
                     <?php $item->show("DateTimeFormat")?>
+                </td>
+                <td>
+                    <?php $item->show("ip_address")?>
                 </td>
                 <td>
                     <?php $item->show("event_code")?>

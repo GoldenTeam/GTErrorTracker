@@ -19,6 +19,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
 
     private $_count = -1;
     private $_options = array();
+    private $_sql_search_expression = "CONCAT_WS(' ', event_logger_id, event_file, event_code, event_hash, line, message, ip_address) LIKE ?";
 
     function __construct(Adapter $dbAdapter, ServiceManager $sm) {
         $config = $sm->get('config');
@@ -163,7 +164,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
         if ($this->_count <= 0) {
             $where = new Where();
             if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
-                $where->expression("CONCAT_WS(' ', event_logger_id, event_file, event_code, event_hash, line, message) LIKE ?", "%" . $this->_options["eventData"] . "%");
+                $where->expression($this->_sql_search_expression, "%" . $this->_options["eventData"] . "%");
             }
             $sql = new Sql($this->adapter);
             $select = $sql->select();
@@ -193,7 +194,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $select->order('date_time DESC');
             $select->order('event_logger_id DESC');
             if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
-                $where->expression("CONCAT_WS(' ', event_logger_id, event_file, event_code, event_hash, line, message) LIKE ?", "%" . $this->_options["eventData"] . "%");
+                $where->expression($this->_sql_search_expression, "%" . $this->_options["eventData"] . "%");
             }
             $select->where($where);
         });
