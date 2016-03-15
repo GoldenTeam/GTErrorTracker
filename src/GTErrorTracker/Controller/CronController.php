@@ -21,7 +21,7 @@ class CronController extends AbstractActionController {
 
         echo "1 is true (entries will be found and deleted from database)\n";
         print_r($params);
-        $eventLogger["Number of Deleted Entries From Data Base"] = $this->GTGateway("EventLoggerGateway")->deteteByParams($params);
+        $eventLogger["Number of Deleted Entries From Data Base"] = $this->GTGateway("EventLoggerGateway")->deleteByParams($params);
         print_r($eventLogger);
     }
 

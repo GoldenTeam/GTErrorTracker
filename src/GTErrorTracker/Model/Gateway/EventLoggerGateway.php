@@ -2,16 +2,17 @@
 
 namespace GTErrorTracker\Model\Gateway;
 
-use GTErrorTracker\Model\EventLogger;
 use GTErrorTracker\H;
+use GTErrorTracker\Model\EventLogger;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\Sql\Delete;
+use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Paginator\Adapter\AdapterInterface;
-use Zend\Db\Sql\Select;
 use Zend\ServiceManager\ServiceManager;
 
 class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface {
@@ -29,9 +30,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
         return new EventLogger();
     }
 
-
-    public function deteteByParams($params) {
-
+    public function deleteByParams($params) {
         $time = H\Env::getDateTime()->getTimestamp();
         echo "$time\n\n";
         echo strtotime($time);
@@ -45,7 +44,6 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
         } else {
             $result['EXCEPTION_DISPATCH'] = 0;
         }
-
 
         if ($params['GTErrorTypesDeleteFromDb']['EXCEPTION_RENDER']) {
             $result['EXCEPTION_RENDER'] = $this->delete(function (Delete $delete) use ($params, $time) {
@@ -67,7 +65,6 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $result['ERROR_PHP'] = 0;
         }
 
-
         if ($params['GTErrorTypesDeleteFromDb']['EXCEPTION_PHP']) {
             $result['EXCEPTION_PHP'] = $this->delete(function (Delete $delete) use ($params, $time) {
                 $where = new Where();
@@ -88,7 +85,6 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
             $result['WARNING_PHP'] = 0;
         }
 
-
         if ($params['GTErrorTypesDeleteFromDb']['NOTICE_PHP']) {
             $result['NOTICE_PHP'] = $this->delete(function (Delete $delete) use ($params, $time) {
                 $where = new Where();
@@ -98,13 +94,8 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
         } else {
             $result['NOTICE_PHP'] = 0;
         }
-
-
         return $result;
     }
-
-
-
 
     public function findByEventLoggerId($event_logger_id) {
         $this->result("Can't find event by id");
@@ -119,7 +110,6 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
     public function remove(EventLogger $event_logger) {
         $this->result("Can't delete event by id");
         $event_logger_id  = intval($event_logger->get_event_logger_id());
-
         $affected = $this->delete(array('event_logger_id' => $event_logger_id));
         if ($affected >= 0) {
             $this->result("Event was deleted successfully.", false);
@@ -144,7 +134,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
                 $this->result("Event was updated successfully.", false);
             }
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw new H\ResultException($e);
         }
     }
 
@@ -171,43 +161,18 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
      */
     public function count() {
         if ($this->_count <= 0) {
+            $where = new Where();
             if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
-
-                $where = new \Zend\Db\Sql\Where();
                 $where->expression("CONCAT_WS(' ', event_logger_id, event_file, event_code, event_hash, line, message) LIKE ?", "%" . $this->_options["eventData"] . "%");
-                $sql = new Sql($this->adapter);
-                $select = $sql->select();
-
-                $select
-                    ->from($this->table)
-                    ->where($where)
-                    ->columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(*)')));
-
-                $sqlTxt = $sql->getSqlStringForSqlObject($select);
-                $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
-                foreach ($resultSet as $row) {
-                    $this->_count = intval($row->count);
-                    break;
-                }
-
-
-            } else {
-                $where = new \Zend\Db\Sql\Where();
-
-                $sql = new Sql($this->adapter);
-                $select = $sql->select();
-
-                $select
-                    ->from($this->table)
-                    ->where($where)
-                    ->columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(*)')));
-
-                $sqlTxt = $sql->getSqlStringForSqlObject($select);
-                $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
-                foreach ($resultSet as $row) {
-                    $this->_count = intval($row->count);
-                    break;
-                }
+            }
+            $sql = new Sql($this->adapter);
+            $select = $sql->select();
+            $select->from($this->table)->where($where)->columns(array('count' => new Expression('COUNT(*)')));
+            $sqlTxt = $sql->getSqlStringForSqlObject($select);
+            $resultSet = $this->adapter->query($sqlTxt, Adapter::QUERY_MODE_EXECUTE);
+            foreach ($resultSet as $row) {
+                $this->_count = intval($row->count);
+                break;
             }
         }
         return $this->_count;
@@ -215,23 +180,22 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
 
     /**
      * Returns an collection of items for a page.
-     *
      * @param  int $offset Page offset
-     * @param  int $itemCountPerPage Number of items per page
+     * @param int $limit
      * @return array
+     * @internal param int $itemCountPerPage Number of items per page
      */
     public function getItems($offset, $limit) {
         $options = $this->_options;
         $items = $this->select(function(Select $select) use ($offset, $limit, $options) {
             $where = new Where();
-            $select->where($where);
             $select->offset($offset)->limit($limit);
             $select->order('date_time DESC');
-        if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
-            $where = new Where();
-            $where->expression("CONCAT_WS(' ', event_logger_id, event_file, event_code, event_hash, line, message) LIKE ?", "%" . $this->_options["eventData"] . "%");
+            $select->order('event_logger_id DESC');
+            if (isset($this->_options["eventData"]) && $this->_options["eventData"] != '') {
+                $where->expression("CONCAT_WS(' ', event_logger_id, event_file, event_code, event_hash, line, message) LIKE ?", "%" . $this->_options["eventData"] . "%");
+            }
             $select->where($where);
-        }
         });
         if ($items->count() > 0) {
             $this->result("", false);
@@ -249,8 +213,7 @@ class EventLoggerGateway extends GTBaseTableGateway implements AdapterInterface 
         return $customEvent;
     }
 
-    public function setOptions($filter)
-    {
+    public function setOptions($filter) {
         $this->_options = $filter;
     }
 }
