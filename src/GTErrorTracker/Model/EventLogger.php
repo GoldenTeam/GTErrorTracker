@@ -324,8 +324,7 @@ class EventLogger extends GTBaseEntity {
             }
             if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
                 if (!$headerSignKey && !$headerToken) {
-                    $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
-                    echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
+                    echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
                     $result = array(
                         'error' => true,
@@ -376,12 +375,12 @@ class EventLogger extends GTBaseEntity {
                 echo $json;
             }
         } else {
+            $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
             if ($this->_f_event_type == EventType::ERROR_PHP ||
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
                 if (!$headerSignKey && !$headerToken) {
-                    $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
                     $result = array(
@@ -398,7 +397,6 @@ class EventLogger extends GTBaseEntity {
             }
             if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
                 if (!$headerSignKey && !$headerToken) {
-                    $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/error";
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
                     $result = array(
