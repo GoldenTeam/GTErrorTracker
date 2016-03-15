@@ -21,9 +21,7 @@ class EventController extends AbstractActionController {
     private function getEvents($eventLoggerGateway) {
         $session = new Container('user');
         $pageNum = $session->page;
-        if ($session->eventData != "###" && $session->eventData != "") {
-            $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
-        }
+        $this->GTGateway('EventLoggerGateway')->setOptions($session->eventData);
         $pager = new Paginator($eventLoggerGateway);
         $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
@@ -63,7 +61,7 @@ class EventController extends AbstractActionController {
         $pageNum = $this->GTParam('page', 0);
         $session->page = $pageNum;
         $eventData = $this->params()->fromPost('GTEventData', '###');
-        if ($eventData != "###" && $eventData != "") {
+        if ($eventData != "###") {
             $filter['eventData'] = $eventData;
             $session->eventData = $filter;
         }
