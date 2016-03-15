@@ -34,6 +34,14 @@ class EventLogger extends GTBaseEntity {
     private $_f_ip_address = null;
 
     private $_default_error_message = "Some Error Occurred. Please Contact to the Administrator, error code = ";
+    private $_result = array(
+        'error' => true,
+        'result' => array(
+            'message' => "",
+            'code' => 3
+        )
+    );
+
     protected $serviceManager;
 
     /**
@@ -289,17 +297,14 @@ class EventLogger extends GTBaseEntity {
             if (!$headerSignKey && !$headerToken) {
                 echo $html;
             } else {
-                $result = array(
-                    'error' => true,
-                    'result' => array(
-                        'stack_trace' => $html,
-                        'exception_message' => $this->_f_message,
-                        'datetime' => $this->_f_date_time,
-                        'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
-                        'code' => 3
-                    )
+                $this->_result['result'] = array(
+                    'stack_trace' => $html,
+                    'exception_message' => $this->_f_message,
+                    'datetime' => $this->_f_date_time,
+                    'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
+                    'code' => 3
                 );
-                $json = json_encode($result);
+                $json = json_encode($this->_result);
                 echo $json;
             }
         } else {
@@ -310,14 +315,8 @@ class EventLogger extends GTBaseEntity {
                 if (!$headerSignKey && !$headerToken) {
                     echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
-                    $result = array(
-                        'error' => true,
-                        'result' => array(
-                            'message' => $this->_default_error_message . $event_logger_id,
-                            'code' => 3
-                        )
-                    );
-                    $json = json_encode($result);
+                    $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
+                    $json = json_encode($this->_result);
                     echo $json;
                 }
                 die;
@@ -326,14 +325,8 @@ class EventLogger extends GTBaseEntity {
                 if (!$headerSignKey && !$headerToken) {
                     echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
-                    $result = array(
-                        'error' => true,
-                        'result' => array(
-                            'message' => $this->_default_error_message . $event_logger_id,
-                            'code' => 3
-                        )
-                    );
-                    $json = json_encode($result);
+                    $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
+                    $json = json_encode($this->_result);
                     echo $json;
                     die;
                 }
@@ -361,17 +354,14 @@ class EventLogger extends GTBaseEntity {
                 $html .= $this->_f_stack_trace . '<br>';
                 $html .= 'User Id:' . $this->_f_user_id . '<br>';
                 $html .= 'Device Id:' . $this->_f_device_id . '<br>';
-                $result = array(
-                    'error' => true,
-                    'result' => array(
-                        'stack_trace' => $html,
-                        'exception_message' => $this->_f_message,
-                        'datetime' => $this->_f_date_time,
-                        'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
-                        'code' => 3,
-                    )
+                $this->_result['result'] = array(
+                    'stack_trace' => $html,
+                    'exception_message' => $this->_f_message,
+                    'datetime' => $this->_f_date_time,
+                    'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
+                    'code' => 3
                 );
-                $json = json_encode($result);
+                $json = json_encode($this->_result);
                 echo $json;
             }
         } else {
@@ -383,14 +373,8 @@ class EventLogger extends GTBaseEntity {
                 if (!$headerSignKey && !$headerToken) {
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
-                    $result = array(
-                        'error' => true,
-                        'result' => array(
-                            'message' => $this->_default_error_message . $event_logger_id,
-                            'code' => 3
-                        )
-                    );
-                    $json = json_encode($result);
+                    $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
+                    $json = json_encode($this->_result);
                     echo $json;
                 }
                 die;
@@ -399,14 +383,8 @@ class EventLogger extends GTBaseEntity {
                 if (!$headerSignKey && !$headerToken) {
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
-                    $result = array(
-                        'error' => true,
-                        'result' => array(
-                            'message' => $this->_default_error_message . $event_logger_id,
-                            'code' => 3
-                        )
-                    );
-                    $json = json_encode($result);
+                    $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
+                    $json = json_encode($this->_result);
                     echo $json;
                 }
             }
