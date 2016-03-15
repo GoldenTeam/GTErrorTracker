@@ -33,6 +33,7 @@ class EventLogger extends GTBaseEntity {
     private $_f_trace_dump = null;
     private $_f_ip_address = null;
 
+    private $_default_error_message = "Some Error Occurred. Please Contact to the Administrator, error code = ";
     protected $serviceManager;
 
     /**
@@ -294,7 +295,7 @@ class EventLogger extends GTBaseEntity {
                         'stack_trace' => $html,
                         'exception_message' => $this->_f_message,
                         'datetime' => $this->_f_date_time,
-                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id, $this->_f_message",
+                        'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
                         'code' => 3
                     )
                 );
@@ -307,12 +308,12 @@ class EventLogger extends GTBaseEntity {
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
                 if (!$headerSignKey && !$headerToken) {
-                    echo "<h1>Some Unexpected Error occurred. Please contact to administrator.</h1>";
+                    echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
                     $result = array(
                         'error' => true,
                         'result' => array(
-                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'message' => $this->_default_error_message . $event_logger_id,
                             'code' => 3
                         )
                     );
@@ -329,7 +330,7 @@ class EventLogger extends GTBaseEntity {
                     $result = array(
                         'error' => true,
                         'result' => array(
-                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'message' => $this->_default_error_message . $event_logger_id,
                             'code' => 3
                         )
                     );
@@ -367,7 +368,7 @@ class EventLogger extends GTBaseEntity {
                         'stack_trace' => $html,
                         'exception_message' => $this->_f_message,
                         'datetime' => $this->_f_date_time,
-                        'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id, $this->_f_message",
+                        'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
                         'code' => 3,
                     )
                 );
@@ -386,7 +387,7 @@ class EventLogger extends GTBaseEntity {
                     $result = array(
                         'error' => true,
                         'result' => array(
-                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'message' => $this->_default_error_message . $event_logger_id,
                             'code' => 3
                         )
                     );
@@ -403,7 +404,7 @@ class EventLogger extends GTBaseEntity {
                     $result = array(
                         'error' => true,
                         'result' => array(
-                            'message' => "Some Error Occurred. Please Contact to the Administrator, error code = $event_logger_id",
+                            'message' => $this->_default_error_message . $event_logger_id,
                             'code' => 3
                         )
                     );
