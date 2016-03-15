@@ -43,13 +43,14 @@ class EventController extends AbstractActionController {
 
     public function deleteAction() {
         $event_logger_id = $this->GTParam('event_logger_id', 0);
-        $eventLogger = $this->GTGateway("EventLoggerGateway")->findByEventLoggerId($event_logger_id);
+        $EG = $this->GTGateway("EventLoggerGateway");
+        $eventLogger = $EG->findByEventLoggerId($event_logger_id);
         $result = H\GTResult::to();
         if ($eventLogger instanceof EventLogger) {
             $eventLogger->delete();
             $result = H\GTResult::to();
             if (!H\GTResult::isError()) {
-                $result = $this->getEvents($eventLogger);
+                $result = $this->getEvents($EG);
             }
         }
         return $this->GTResult($result);
