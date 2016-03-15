@@ -41,6 +41,9 @@ class EventLogger extends GTBaseEntity {
             'code' => 3
         )
     );
+    private $_customConfig = array();
+    private $_headerSignKey;
+    private $_headerToken;
 
     protected $serviceManager;
 
@@ -80,9 +83,9 @@ class EventLogger extends GTBaseEntity {
     public function get_date_time()       { return $this->_f_date_time; }
     public function get_event_hash()      { return $this->_f_event_hash; }
     public function get_xdebug_message()  { return $this->_f_xdebug_message; }
-    public function get_variables_dump()   { return $this->_f_variables_dump; }
-    public function get_trace_dump()   { return $this->_f_trace_dump; }
-    public function get_ip_address()   { return $this->_f_ip_address; }
+    public function get_variables_dump()  { return $this->_f_variables_dump; }
+    public function get_trace_dump()      { return $this->_f_trace_dump; }
+    public function get_ip_address()      { return $this->_f_ip_address; }
 
     public function set_event_logger_id($event_logger_id) { $this->_f_event_logger_id = $event_logger_id; return $this; }
     public function set_event_file($file)                 { $this->_f_event_file = $file; return $this; }
@@ -107,7 +110,7 @@ class EventLogger extends GTBaseEntity {
         $this->_f_date_time = H\Env::getDateTime()->getTimestamp();
 
         $session = new Container('mobile');
-        $this->_f_device_id = isset($session->device_id)?$session->device_id:null;
+        $this->_f_device_id = isset($session->device_id) ? $session->device_id : null;
 
     }
 
@@ -135,9 +138,14 @@ class EventLogger extends GTBaseEntity {
         return ob_get_clean();
     }
 
-    public function handle()
-    {
+    public function handle() {
         $args = func_get_arg(0);
+        $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
+        $config = $serviceManager->get('config');
+        $headers = $serviceManager->get('request')->getHeaders();
+        $this->_customConfig = $config["GTErrorTracker"];
+        $this->_headerSignKey = $headers->get('Signkey');
+        $this->_headerToken = $headers->get('Token');
 
         if ($args instanceof \Exception) {
             $this->_f_event_file = $args->getFile();
@@ -260,11 +268,7 @@ class EventLogger extends GTBaseEntity {
 
         } else {
             $this->_f_event_hash = $event_hash;
-
-            $config = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config');
-            $customConfig = $config["GTErrorTracker"];
-
-            if ($customConfig["GTErrorTypesSaveToDb"][H\EventType::getName($this->_f_event_type)]) {
+            if ($this->_customConfig["GTErrorTypesSaveToDb"][H\EventType::getName($this->_f_event_type)]) {
                 $this->save();
                 $session->eventHash = $event_hash;                 // save new Hash to session
                 $session->lastEventId = $this->_f_event_logger_id; // save new ID to session
@@ -279,13 +283,7 @@ class EventLogger extends GTBaseEntity {
     }
 
     private function echoIfDevMode($event_logger_id) {
-        $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
-        $config = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config');
-        $customConfig = $config["GTErrorTracker"];
-        $headers = $serviceManager->get('request')->getHeaders();
-        $headerSignKey = $headers->get('Signkey');
-        $headerToken = $headers->get('Token');
-        if ($customConfig['developmentMode']) {
+        if ($this->_customConfig['developmentMode']) {
             $html = 'Event Id:' . $event_logger_id . '<br>';
             $html .= H\EventType::getName($this->_f_event_type) . '<br>';
             $html .= $this->_f_event_code . '<br>';
@@ -294,7 +292,7 @@ class EventLogger extends GTBaseEntity {
             $html .= $this->_f_stack_trace . '<br>';
             $html .= 'User Id:' . $this->_f_user_id . '<br>';
             $html .= 'Device Id:' . $this->_f_device_id . '<br>';
-            if (!$headerSignKey && !$headerToken) {
+            if (!$this->_headerSignKey && !$this->_headerToken) {
                 echo $html;
             } else {
                 $this->_result['result'] = array(
@@ -312,7 +310,7 @@ class EventLogger extends GTBaseEntity {
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
-                if (!$headerSignKey && !$headerToken) {
+                if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
                     $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
@@ -322,7 +320,7 @@ class EventLogger extends GTBaseEntity {
                 die;
             }
             if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
-                if (!$headerSignKey && !$headerToken) {
+                if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
                     $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
@@ -335,14 +333,8 @@ class EventLogger extends GTBaseEntity {
     }
 
     private function redirectIfDevMode($event_logger_id) {
-        $serviceManager = ServiceLocatorFactory::getInstance()->getServiceLocator();
-        $config = ServiceLocatorFactory::getInstance()->getServiceLocator()->get('config');
-        $customConfig = $config["GTErrorTracker"];
-        $headers = $serviceManager->get('request')->getHeaders();
-        $headerSignKey = $headers->get('Signkey');
-        $headerToken = $headers->get('Token');
-        if ($customConfig['developmentMode']) {
-            if (!$headerSignKey && !$headerToken) {
+        if ($this->_customConfig['developmentMode']) {
+            if (!$this->_headerSignKey && !$this->_headerToken) {
                 $redirect ="http://" . ($_SERVER['SERVER_NAME']) . "/gtevent/show/event_id/" . $event_logger_id;
                 echo "<a href='" . $redirect . "'>$redirect</a>";
             } else {
@@ -370,7 +362,7 @@ class EventLogger extends GTBaseEntity {
                 $this->_f_event_type == EventType::EXCEPTION_DISPATCH ||
                 $this->_f_event_type == EventType::EXCEPTION_RENDER ||
                 $this->_f_event_type == EventType::EXCEPTION_PHP) {
-                if (!$headerSignKey && !$headerToken) {
+                if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
                     $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
@@ -380,7 +372,7 @@ class EventLogger extends GTBaseEntity {
                 die;
             }
             if ($this->_f_event_type == EventType::ROUTER_NOT_MATCH) {
-                if (!$headerSignKey && !$headerToken) {
+                if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
                     $this->_result['result']['message'] = $this->_default_error_message . $event_logger_id;
