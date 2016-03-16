@@ -4,12 +4,6 @@ namespace GTErrorTracker\Controller\Plugin;
 
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
-/**
- * Description of Gateway
- *
- * @author maxim
- */
-
 class GTGateway extends AbstractPlugin {
 
     public function __invoke($gatewayName) {

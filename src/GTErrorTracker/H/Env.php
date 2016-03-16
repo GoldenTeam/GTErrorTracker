@@ -2,11 +2,6 @@
 
 namespace GTErrorTracker\H;
 
-/**
- * Description of Env
- *
- * @author kalin-mv
- */
 class Env {
 
     const EVENT_PAGER = 10;

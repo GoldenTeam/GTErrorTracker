@@ -4,11 +4,6 @@ namespace GTErrorTracker\Controller\Plugin;
 
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
-/**
- * Description of Param
- *
- * @author kalin-mv
- */
 class GTParam extends AbstractPlugin {
 
     public function __invoke($param = null, $default = null) {

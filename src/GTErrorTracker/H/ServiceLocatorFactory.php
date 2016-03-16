@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: melnik-da
- * Date: 6/18/15
- * Time: 4:08 PM
- */
 
 namespace GTErrorTracker\H;
 
@@ -39,7 +33,7 @@ class ServiceLocatorFactory implements ServiceLocatorAwareInterface {
      * @param ServiceManager $sm
      */
     public function setInstance(ServiceManager $sm) {
-        $this->$serviceManager = $sm;
+        $this->serviceManager = $sm;
     }
 
     /**
@@ -54,5 +48,7 @@ class ServiceLocatorFactory implements ServiceLocatorAwareInterface {
      * Get service locator
      * @return ServiceLocatorInterface
      */
-    public function getServiceLocator() { return $this->serviceManager; }
+    public function getServiceLocator() {
+        return $this->serviceManager;
+    }
 }

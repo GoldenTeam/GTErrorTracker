@@ -11,11 +11,6 @@ use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-/**
- * Description of BaseTableGateway
- *
- * @author kalin-mv
- */
 abstract class GTBaseTableGateway extends AbstractTableGateway implements ServiceLocatorAwareInterface {
 
     private $_entity;

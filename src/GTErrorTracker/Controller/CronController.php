@@ -5,6 +5,7 @@ namespace GTErrorTracker\Controller;
 use GTErrorTracker\H;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Console\Request as ConsoleRequest;
+
 class CronController extends AbstractActionController {
 
     public function deleteAction() {

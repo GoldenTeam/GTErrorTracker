@@ -2,10 +2,6 @@
 
 namespace GTErrorTracker\H;
 
-/**
- * Description of Result
- * @author kalin-mv
- */
 class GTResult {
     private static $_error = true;
     private static $_message = "";

@@ -9,7 +9,7 @@ var eventData;
     this.init = function(page) {
         _page = page;
         _this.initPager();
-    }
+    };
 
     this.initPager = function() {
         $('.event_list .list .pagination a').click(function(e) {
@@ -26,12 +26,11 @@ var eventData;
                 btnOk: {
                     label:"OK",
                     callback: function() {
-                        var data =
-                            {
-                                event_logger_id:event_id,
-                                page:_page,
-                                "GTEventData": eventData
-                            };
+                        var data = {
+                            event_logger_id:event_id,
+                            page:_page,
+                            "GTEventData": eventData
+                        };
 
                         GTm.post("/gtevent/delete", data, function(data) {
                             $("#events").html(data.pagerHtml);
@@ -74,10 +73,11 @@ var eventData;
                             _this.initPager();
                         }
                     });
+                window.history.pushState(null, null, '/gtevent/page/' + 1);
             }
         );
 
-    }
+    };
 
     this.search = function(page) {
         page = (page === undefined ? _page : page);

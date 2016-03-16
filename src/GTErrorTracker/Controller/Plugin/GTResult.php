@@ -2,16 +2,12 @@
 
 namespace GTErrorTracker\Controller\Plugin;
 
-use GTErrorTracker\Model\Gateway\GTBaseTableGateway;
 use GTErrorTracker\H;
+use GTErrorTracker\Model\Gateway\GTBaseTableGateway;
 
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\View\Model\JsonModel;
 
-/**
- * Description of Result
- * @author kalin-mv
- */
 class GTResult extends AbstractPlugin {
 
     public function __invoke($data = null) {

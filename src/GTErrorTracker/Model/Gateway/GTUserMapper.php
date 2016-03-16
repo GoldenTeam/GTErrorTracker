@@ -10,7 +10,6 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 
-
 class GTUserMapper extends AbstractTableGateway implements ServiceLocatorAwareInterface  {
 
     protected $pkName  = '';
@@ -18,7 +17,6 @@ class GTUserMapper extends AbstractTableGateway implements ServiceLocatorAwareIn
 
     protected $_hydrator;
     protected $_entity;
-
 
     public function setServiceLocator(ServiceLocatorInterface $sm) {
         $config = $sm->get('config');

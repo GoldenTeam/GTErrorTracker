@@ -2,13 +2,10 @@
 
 namespace GTErrorTracker\View\Helper;
 
+use GTErrorTracker\Model\GTBaseEntity;
+
 use Zend\View\Helper\AbstractHelper;
 
-/**
- * Description of Text
- *
- * @author kalin-mv
- */
 class GTTxt extends AbstractHelper {
     
     /**
@@ -28,7 +25,7 @@ class GTTxt extends AbstractHelper {
             $text = $obj[$key];
         } else if (is_object($obj) && isset($obj->$key)) { // Find text in View.
             $text = $obj->$key;
-        } else if($obj instanceof \GTErrorTracker\Model\GTBaseEntity) {
+        } else if($obj instanceof GTBaseEntity) {
             $method = "get_" . $key;
             if (method_exists($obj, $method)) {
                 $text = $obj->$method();

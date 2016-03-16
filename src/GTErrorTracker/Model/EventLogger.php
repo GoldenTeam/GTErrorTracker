@@ -40,6 +40,9 @@ class EventLogger extends GTBaseEntity {
 
     protected $serviceManager;
 
+    const ERROR_CODE_RESPONSE = 0;
+    const SECONDS_PREVENT_ERROR_RECURSION = 2;
+
     /**
      * User
      * @var GTUserInterface
@@ -137,6 +140,11 @@ class EventLogger extends GTBaseEntity {
         $config = $serviceManager->get('config');
         $headers = $serviceManager->get('request')->getHeaders();
         $this->_customConfig = $config["GTErrorTracker"];
+        $this->_customConfig['errorCodeResponse'] = $this->_customConfig['errorCodeResponse'] ?
+            $this->_customConfig['errorCodeResponse'] : self::ERROR_CODE_RESPONSE;
+        $this->_customConfig['secondsPreventErrorRecursion'] = $this->_customConfig['secondsPreventErrorRecursion'] ?
+            $this->_customConfig['secondsPreventErrorRecursion'] : self::SECONDS_PREVENT_ERROR_RECURSION;
+
         $this->_headerSignKey = $headers->get('Signkey');
         $this->_headerToken = $headers->get('Token');
 
@@ -249,7 +257,7 @@ class EventLogger extends GTBaseEntity {
 
         if($session->eventHash == $event_hash) {
 
-            if($this->_f_date_time - $session->errorTime < 2) {
+            if($this->_f_date_time - $session->errorTime < $this->_customConfig['secondsPreventErrorRecursion']) {
 
                 $this->echoIfDevMode($session->lastEventId);
 
@@ -288,7 +296,7 @@ class EventLogger extends GTBaseEntity {
             if (!$this->_headerSignKey && !$this->_headerToken) {
                 echo $html;
             } else {
-                $this->_result['result'] = H\GTResult::to($this->_default_error_message, true, 3);
+                $this->_result['result'] = H\GTResult::to($this->_default_error_message, true, $this->_customConfig['errorCodeResponse']);
                 $this->_result['result'] = array(
                     'stack_trace' => $html,
                     'exception_message' => $this->_f_message,
@@ -307,7 +315,7 @@ class EventLogger extends GTBaseEntity {
                 if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
-                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, 3);
+                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, $this->_customConfig['errorCodeResponse']);
                     $json = json_encode($this->_result);
                     echo $json;
                 }
@@ -317,7 +325,7 @@ class EventLogger extends GTBaseEntity {
                 if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<h1>$this->_default_error_message . $event_logger_id</h1>";
                 } else {
-                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, 3);
+                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, $this->_customConfig['errorCodeResponse']);
                     $json = json_encode($this->_result);
                     echo $json;
                     die;
@@ -341,7 +349,7 @@ class EventLogger extends GTBaseEntity {
                 $html .= 'User Id:' . $this->_f_user_id . '<br>';
                 $html .= 'Device Id:' . $this->_f_device_id . '<br>';
 
-                $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, 3);
+                $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, $this->_customConfig['errorCodeResponse']);
                 $this->_result['result'] = array(
                     'stack_trace' => $html,
                     'exception_message' => $this->_f_message,
@@ -361,7 +369,7 @@ class EventLogger extends GTBaseEntity {
                 if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
-                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, 3);
+                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, $this->_customConfig['errorCodeResponse']);
                     $json = json_encode($this->_result);
                     echo $json;
                 }
@@ -371,7 +379,7 @@ class EventLogger extends GTBaseEntity {
                 if (!$this->_headerSignKey && !$this->_headerToken) {
                     echo "<meta http-equiv='refresh' content='0;url=$redirect'>";
                 } else {
-                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, 3);
+                    $this->_result['result'] = H\GTResult::to($this->_default_error_message . $event_logger_id, true, $this->_customConfig['errorCodeResponse']);
                     $json = json_encode($this->_result);
                     echo $json;
                 }

@@ -4,11 +4,6 @@ namespace GTErrorTracker\Model;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-/**
- * Description of BaseEntity
- *
- * @author maxim
- */
 class GTBaseEntity {
 
     private $_serviceLocator;
@@ -44,13 +39,13 @@ class GTBaseEntity {
                 }
             }
         } else {
-            $reflecionObject = new \ReflectionObject($this);
-            foreach ($reflecionObject->getProperties(\ReflectionProperty::IS_PRIVATE) as $propiedad) {
-                $prefix = substr($propiedad->getName(), 0, 3);
+            $reflectionObject = new \ReflectionObject($this);
+            foreach ($reflectionObject->getProperties(\ReflectionProperty::IS_PRIVATE) as $property) {
+                $prefix = substr($property->getName(), 0, 3);
                 if ($prefix == "_f_") {
-                    $field = substr($propiedad->getName(), 3);
+                    $field = substr($property->getName(), 3);
                     $method = "set_" . lcfirst($field);
-                    $reflecionObject->getMethod($method)->invoke($this, null);
+                    $reflectionObject->getMethod($method)->invoke($this, null);
                 }
             }
         }
@@ -59,13 +54,13 @@ class GTBaseEntity {
 
     public function getArrayCopy() {
         $object = array();
-        $reflecionObject = new \ReflectionObject($this);
-        foreach ($reflecionObject->getProperties(\ReflectionProperty::IS_PRIVATE) as $propiedad) {
-            $prefix = substr($propiedad->getName(), 0, 3);
+        $reflectionObject = new \ReflectionObject($this);
+        foreach ($reflectionObject->getProperties(\ReflectionProperty::IS_PRIVATE) as $property) {
+            $prefix = substr($property->getName(), 0, 3);
             if ($prefix == "_f_") {
-                $field = substr($propiedad->getName(), 3);
+                $field = substr($property->getName(), 3);
                 $method = "get_" . lcfirst($field);
-                $object[$field] = $reflecionObject->getMethod($method)->invoke($this);
+                $object[$field] = $reflectionObject->getMethod($method)->invoke($this);
             }
         }
         return $object;

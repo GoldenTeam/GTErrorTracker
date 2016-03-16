@@ -2,17 +2,15 @@
 
 namespace GTErrorTracker\Controller\Plugin;
 
+use Zend\Json\Json;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\View\Helper\HeadScript;
-use Zend\View\Helper\HeadLink;
-use Zend\Stdlib\ArrayUtils;
 use Zend\Session\Container;
-/**
- * Description of GTHead
- * @author kalin-mv
- */
+use Zend\Stdlib\ArrayUtils;
+use Zend\View\Helper\HeadLink;
+use Zend\View\Helper\HeadScript;
+
 class GTHead extends AbstractPlugin implements ServiceLocatorAwareInterface {
 
     /**
@@ -154,7 +152,7 @@ class GTHead extends AbstractPlugin implements ServiceLocatorAwareInterface {
         }
         $user = new Container('user');
         
-        $options = \Zend\Json\Json::encode($this->_options);
+        $options = Json::encode($this->_options);
         $script = 'jQuery(function () { gtm.init('.$options.'); });';
         $this->_headScript->prependScript($script);
     }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: melnik-da
- * Date: 6/17/15
- * Time: 2:48 PM
- */
 namespace GTErrorTracker\Controller;
 
 use GTErrorTracker\Form\GTEventSearchForm;
@@ -21,10 +15,11 @@ class EventController extends AbstractActionController {
     private function getEvents($eventLoggerGateway) {
         $session = new Container('user');
         $pageNum = $session->page;
+        $itemsPerPage = $session->itemsPerPage ? $session->itemsPerPage : Env::EVENT_PAGER;
         $filter = $session->eventData;
         $this->GTGateway('EventLoggerGateway')->setOptions($filter);
         $pager = new Paginator($eventLoggerGateway);
-        $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage(Env::EVENT_PAGER);
+        $pager->setCurrentPageNumber($pageNum)->setItemCountPerPage($itemsPerPage);
         $partial = $this->getServiceLocator()->get('viewhelpermanager')->get('partial');
         $sm = $this->getServiceLocator();
         $formSearchEvent = new GTEventSearchForm($sm);
@@ -62,6 +57,7 @@ class EventController extends AbstractActionController {
         $customConfig = $config["GTErrorTracker"];
         $pageNum = $this->GTParam('page', 0);
         $session->page = $pageNum;
+        $session->itemsPerPage = $customConfig['itemsPerPage'] ? $customConfig['itemsPerPage'] : Env::EVENT_PAGER;
         $eventData = $this->params()->fromPost('GTEventData', '###');
         if ($eventData != "###") {
             $filter['eventData'] = $eventData;

@@ -4,11 +4,6 @@ namespace GTErrorTracker\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 
-/**
- * Description of Html
- *
- * @author kalin-mv
- */
 class GTHtml extends AbstractHelper {
 
     public function __invoke($key, $obj = null) {

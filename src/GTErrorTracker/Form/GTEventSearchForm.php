@@ -2,7 +2,6 @@
 
 namespace GTErrorTracker\Form;
 
-use Zend\Form\Element\Submit;
 use Zend\Form\Element\Text;
 use Zend\Form\Form;
 
