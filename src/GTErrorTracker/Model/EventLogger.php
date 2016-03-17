@@ -302,7 +302,7 @@ class EventLogger extends GTBaseEntity {
                     'exception_message' => $this->_f_message,
                     'datetime' => $this->_f_date_time,
                     'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
-                    'code' => 3
+                    'code' => $this->_customConfig['errorCodeResponse']
                 );
                 $json = json_encode($this->_result);
                 echo $json;
@@ -355,7 +355,7 @@ class EventLogger extends GTBaseEntity {
                     'exception_message' => $this->_f_message,
                     'datetime' => $this->_f_date_time,
                     'message' => $this->_default_error_message . "$event_logger_id, $this->_f_message",
-                    'code' => 3
+                    'code' => $this->_customConfig['errorCodeResponse']
                 );
                 $json = json_encode($this->_result);
                 echo $json;
